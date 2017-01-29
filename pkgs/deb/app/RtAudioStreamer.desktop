@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=M.m
+Type=Application
+Categories=Sound;Development;GTK;GNOME;
+Terminal=false
+Name="RtAudioStreamer"
+Comment="Streaming Audio with RtAudio API"
+Icon=/usr/share/pixmaps/RtAudioStreamer.svg
+Exec=/usr/bin/RtAudioStreamer
+StartupNotify=true
+Encoding=UTF-8
+
+Name[en_US]=RtAudioStreamer
