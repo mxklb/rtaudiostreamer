@@ -13,7 +13,7 @@ To succesfully build on Ubuntu (trusty):
 To succesfully build on OSX:
     
     brew update
-    brew install qt5 librtaudio-dev
+    brew install qt5 rt-audio
     export PATH=$(brew --prefix)/opt/qt5/bin:$PATH
 
 ## Build Instructions
