@@ -5,3 +5,6 @@
 Makefile
 *.autosave
 *.framework
+*.app/
+*.o
+moc_*

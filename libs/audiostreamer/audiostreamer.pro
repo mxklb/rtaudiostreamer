@@ -11,6 +11,10 @@ HEADERS += audioprocessing.h
 HEADERS += streamsettings.h
 
 LIBS += -lrtaudio
+macx { 
+    INCLUDEPATH += /usr/local/include/
+    LIBS += -L/usr/local/lib -lrtaudio
+}
 
 # Relative path to libs
 customLibs = ../audiobuffer/audiobuffer

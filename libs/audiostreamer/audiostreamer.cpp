@@ -17,7 +17,7 @@ AudioStreamer::AudioStreamer(QObject *parent) : QObject(parent)
         rtAudio = new RtAudio();
         activeDeviceId = settings.value("audiostreamer/activeDeviceId", rtAudio->getDefaultInputDevice()).toUInt();
     }
-    catch (RtError &error) {
+    catch (RtAudioError &error) {
         error.printMessage();
     }
 
@@ -53,7 +53,7 @@ void AudioStreamer::setupDeviceList()
             RtAudio::DeviceInfo info = rtAudio->getDeviceInfo(i);
             devices.push_back(info);
         }
-        catch (RtError &error) {
+        catch (RtAudioError &error) {
             error.printMessage();
             break;
         }
@@ -161,7 +161,7 @@ bool AudioStreamer::startStream(StreamSettings settings)
       rtAudio->openStream(NULL, &parameters, RTAUDIO_SINT16, settings.hwSampleRate, &settings.hwBufferSize, &audioStreamCallback, &acquisitionBuffer);
       rtAudio->startStream();
     }
-    catch ( RtError& e ) {
+    catch ( RtAudioError& e ) {
       e.printMessage();
       return false;
     }
@@ -173,8 +173,8 @@ bool AudioStreamer::startStream(StreamSettings settings)
  */
 void AudioStreamer::stopStream()
 {
-    if( rtAudio->isStreamRunning() ) try { rtAudio->stopStream(); } catch ( RtError& e ) { e.printMessage(); };
-    if( rtAudio->isStreamOpen() ) try { rtAudio->closeStream(); } catch ( RtError& e ) { e.printMessage(); };
+    if( rtAudio->isStreamRunning() ) try { rtAudio->stopStream(); } catch ( RtAudioError& e ) { e.printMessage(); };
+    if( rtAudio->isStreamOpen() ) try { rtAudio->closeStream(); } catch ( RtAudioError& e ) { e.printMessage(); };
 }
 
 /*
