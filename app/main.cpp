@@ -10,10 +10,10 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("RtAudioStreamer");
 
     AudioStreamer streamer;
-    //unsigned int deviceId = 0;
-    //QList<unsigned int> channels({0,1});
+    unsigned int deviceId = 0;
+    QList<unsigned int> channels({0,1});
 
-    //streamer.setActiveDevice(deviceId, channels);
+    streamer.setActiveDevice(deviceId, channels);
     streamer.startStream();
 
     //std::cerr << "thread ID (main): " << QThread::currentThreadId();
