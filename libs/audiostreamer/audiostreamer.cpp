@@ -69,6 +69,14 @@ void AudioStreamer::setupDeviceList()
 }
 
 /*
+ * Returns the list of detected RtAudio devices.
+ */
+QList<RtAudio::DeviceInfo> AudioStreamer::getListOfDevices()
+{
+    return devices;
+}
+
+/*
  * Prints the list of devices to to console.
  */
 void AudioStreamer::printListOfDevices()

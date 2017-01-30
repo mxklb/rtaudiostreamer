@@ -16,10 +16,10 @@ macx {
     LIBS += -L/usr/local/lib -lrtaudio
 }
 
-# Relative path to libs
+# Relative path to custom libs
 customLibs = ../audiobuffer/audiobuffer
 
-# Load and link these custom libs
+# Load and link custom libs
 include(../loadlibs.pri)
 
 include(../lib.pri)

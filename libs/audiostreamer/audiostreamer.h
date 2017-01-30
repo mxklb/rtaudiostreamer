@@ -17,6 +17,7 @@ public:
     ~AudioStreamer();
 
     void printListOfDevices();
+    QList<RtAudio::DeviceInfo> getListOfDevices();
 
     unsigned int numberOfInputChannels(int deviceId = -1);
     QList<unsigned int> getInputChannelIds(int deviceId = -1);
