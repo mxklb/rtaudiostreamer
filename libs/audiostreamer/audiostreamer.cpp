@@ -17,7 +17,11 @@ AudioStreamer::AudioStreamer(QObject *parent) : QObject(parent)
         rtAudio = new RtAudio();
         activeDeviceId = settings.value("audiostreamer/activeDeviceId", rtAudio->getDefaultInputDevice()).toUInt();
     }
-    catch (RtAudioError &error) {
+#ifdef RTERROR_H
+    catch (RtError &error) {
+#else
+    catch ( RtAudioError& error ) {
+#endif
         error.printMessage();
     }
 
@@ -53,7 +57,11 @@ void AudioStreamer::setupDeviceList()
             RtAudio::DeviceInfo info = rtAudio->getDeviceInfo(i);
             devices.push_back(info);
         }
-        catch (RtAudioError &error) {
+#ifdef RTERROR_H
+            catch (RtError &error) {
+#else
+            catch ( RtAudioError& error ) {
+#endif
             error.printMessage();
             break;
         }
@@ -161,8 +169,12 @@ bool AudioStreamer::startStream(StreamSettings settings)
       rtAudio->openStream(NULL, &parameters, RTAUDIO_SINT16, settings.hwSampleRate, &settings.hwBufferSize, &audioStreamCallback, &acquisitionBuffer);
       rtAudio->startStream();
     }
-    catch ( RtAudioError& e ) {
-      e.printMessage();
+#ifdef RTERROR_H
+    catch (RtError &error) {
+#else
+    catch ( RtAudioError& error ) {
+#endif
+      error.printMessage();
       return false;
     }
     return true;
@@ -173,8 +185,25 @@ bool AudioStreamer::startStream(StreamSettings settings)
  */
 void AudioStreamer::stopStream()
 {
-    if( rtAudio->isStreamRunning() ) try { rtAudio->stopStream(); } catch ( RtAudioError& e ) { e.printMessage(); };
-    if( rtAudio->isStreamOpen() ) try { rtAudio->closeStream(); } catch ( RtAudioError& e ) { e.printMessage(); };
+    if( rtAudio->isStreamRunning() ) {
+        try { rtAudio->stopStream(); }
+#ifdef RTERROR_H
+        catch ( RtError& error )
+#else
+        catch ( RtAudioError& error )
+#endif
+        { error.printMessage(); };
+    }
+
+    if( rtAudio->isStreamOpen() ) {
+        try { rtAudio->closeStream(); }
+#ifdef RTERROR_H
+        catch ( RtError& error )
+#else
+        catch ( RtAudioError& error )
+#endif
+        { error.printMessage(); };
+    }
 }
 
 /*
