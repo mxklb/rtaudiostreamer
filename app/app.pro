@@ -9,11 +9,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 SOURCES += main.cpp
 
-macx { 
-    INCLUDEPATH += /usr/local/include/
-    LIBS += -L/usr/local/lib -lrtaudio
-}
-
 # Relative path to custom libs
 customLibs = ../libs/audiobuffer/audiobuffer
 customLibs += ../libs/audiostreamer/audiostreamer
