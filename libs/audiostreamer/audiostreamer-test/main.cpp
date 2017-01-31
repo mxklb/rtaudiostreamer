@@ -1,13 +1,14 @@
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch.hpp"
 #include "audiostreamer.h"
+#include <unistd.h>
 
 TEST_CASE( "AudioStreamer", "[AudioStreamer]" ) {
     SECTION("Initialization") {
         AudioStreamer streamer;
         unsigned int deviceId = 0;
 
-        if( streamer.getListOfDevices().size() != 0 ) {
+        if( streamer.getListOfDevices().size() > 0 ) {
             // Test numberOfInputChannels
             streamer.setActiveDevice(deviceId);
             unsigned int numOfInputChannels = streamer.getListOfDevices().at(deviceId).inputChannels;
@@ -29,6 +30,18 @@ TEST_CASE( "AudioStreamer", "[AudioStreamer]" ) {
                     else REQUIRE(streamer.getInputChannelIds().at(ch) == channels.at(numOfInputChannels-1-ch));
                 }
             }
-        }
+        } else WARN("Testing fails: RtAudio didn't find any channels!");
+    }
+
+    SECTION("Streaming") {
+        AudioStreamer streamer;
+        if( streamer.getListOfDevices().size() > 0 ) {
+            bool streamStarted = streamer.startStream();
+            CHECK( streamStarted == true );
+            if( streamStarted ) {
+                sleep(3);
+                REQUIRE(streamer.stopStream() == true);
+            }
+        } else WARN("Testing fails: RtAudio didn't find any channels!");
     }
 }

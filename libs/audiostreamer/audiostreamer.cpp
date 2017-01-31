@@ -191,8 +191,8 @@ bool AudioStreamer::startStream(StreamSettings settings)
 /*
  * Stop and close the active audio stream.
  */
-void AudioStreamer::stopStream()
-{
+bool AudioStreamer::stopStream()
+{ 
     if( rtAudio->isStreamRunning() ) {
         try { rtAudio->stopStream(); }
 #ifdef RTERROR_H
@@ -200,7 +200,7 @@ void AudioStreamer::stopStream()
 #else
         catch ( RtAudioError& error )
 #endif
-        { error.printMessage(); };
+        { error.printMessage(); return false; }
     }
 
     if( rtAudio->isStreamOpen() ) {
@@ -210,8 +210,10 @@ void AudioStreamer::stopStream()
 #else
         catch ( RtAudioError& error )
 #endif
-        { error.printMessage(); };
+        { error.printMessage(); return false; };
     }
+
+    return true;
 }
 
 /*

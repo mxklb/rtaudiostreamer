@@ -26,7 +26,7 @@ public:
     void setActiveChannels(QList<unsigned int> channels);
 
     bool startStream(StreamSettings settings = StreamSettings());
-    void stopStream();
+    bool stopStream();
 
 signals:
     void triggerAudioProcessing(AudioBuffer *audioData);
