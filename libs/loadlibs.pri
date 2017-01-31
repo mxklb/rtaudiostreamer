@@ -49,7 +49,7 @@ for(lib, customLibs) {
     }
 }
 
-macx { # Deploy all linked frameworks to target bundle
+macx { # Deploy all linked frameworks to target bundle - todo: make syslibs.pri for external libs!
     APP_LIB_FILES.files = $$frameworks
     APP_LIB_FILES.path = Contents/Frameworks/
     QMAKE_BUNDLE_DATA += APP_LIB_FILES

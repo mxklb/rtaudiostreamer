@@ -12,15 +12,21 @@ TEST_CASE( "AudioStreamer", "[AudioStreamer]" ) {
         unsigned int numOfInputs = streamer.getListOfDevices().at(deviceId).inputChannels;
         REQUIRE(streamer.numberOfInputChannels() == numOfInputs);
 
-        // Test setActiveChannels (all channels 0..N)
-        QList<unsigned int> channels;
-        for( unsigned int ch=0; ch<numOfInputs; ch++ ) {
-            channels.push_back(ch);
-        }
-        streamer.setActiveChannels(channels);
-        REQUIRE(streamer.getInputChannelIds().size() == numOfInputs);
-        for( unsigned int ch=0; ch<numOfInputs; ch++ ) {
-            REQUIRE(streamer.getInputChannelIds().at(ch) == channels.at(ch));
+        // Test setActiveChannels (all channels 0..N-1 and reverse N-1..0)
+        QList<bool> channelSort({false, true});
+        foreach (bool reverse, channelSort) {
+            QList<unsigned int> channels;
+            for( unsigned int ch=0; ch<numOfInputs; ch++ ) {
+                if( !reverse ) channels.push_back(ch);
+                else channels.push_front(ch);
+            }
+            streamer.setActiveChannels(channels);
+            REQUIRE(streamer.getInputChannelIds().size() == numOfInputs);
+
+            for( unsigned int ch=0; ch<numOfInputs; ch++ ) {
+                if( !reverse ) REQUIRE(streamer.getInputChannelIds().at(ch) == channels.at(ch));
+                else REQUIRE(streamer.getInputChannelIds().at(ch) == channels.at(numOfInputs-1-ch));
+            }
         }
     }
 }
