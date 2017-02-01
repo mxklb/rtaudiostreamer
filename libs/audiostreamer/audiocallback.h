@@ -24,6 +24,9 @@ int audioStreamCallback( void *outputBuffer, void *inputBuffer,
                          unsigned int hwFrameCount, double streamTime,
                          RtAudioStreamStatus status, void *streamBuffers )
 {
+    Q_UNUSED(outputBuffer)
+    Q_UNUSED(streamTime)
+
     if( status ) std::cout << "Stream over/underflow detected." << std::endl;
     if( hwFrameCount == 0 ) std::cout << "Zero frames detected." << std::endl;
 
@@ -32,6 +35,11 @@ int audioStreamCallback( void *outputBuffer, void *inputBuffer,
     unsigned int numberOfChannels = audioBuffers->numberOfChannels();
     unsigned int lowestChannel = audioBuffers->activeChannelId(0);
     unsigned int numberOfFrames = hwFrameCount;
+
+    if( numberOfChannels == 0 ) {
+        std::cout << "Zero channels detected." << std::endl;
+        return 0;
+    }
 
     if( !audioBuffers->rotateRingbuffers(numberOfFrames) ) {
         numberOfFrames = audioBuffers->ringBufferSize;

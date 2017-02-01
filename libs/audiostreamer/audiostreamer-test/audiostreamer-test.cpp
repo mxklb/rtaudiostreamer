@@ -3,7 +3,7 @@
 #include "audiostreamer.h"
 #include <unistd.h>
 
-TEST_CASE( "AudioStreamer", "[AudioStreamer]" ) {
+TEST_CASE( "AudioStreamer", "[RtAudio]" ) {
     SECTION("Initialization") {
         AudioStreamer streamer;
         unsigned int deviceId = 0;
@@ -37,9 +37,9 @@ TEST_CASE( "AudioStreamer", "[AudioStreamer]" ) {
         AudioStreamer streamer;
         if( streamer.getListOfDevices().size() > 0 ) {
             if( streamer.startStream() ) {
-                sleep(3);
+                usleep(200);
                 REQUIRE(streamer.stopStream() == true);
-            } else WARN("Testing fails: RtAudio can't start streaming!");
-        } else WARN("Testing fails: RtAudio didn't find any channels!");
+            } else WARN("Streaming failed: RtAudio can't start stream!");
+        } else WARN("Testing disabled: RtAudio didn't find any channels!");
     }
 }
