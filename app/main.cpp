@@ -10,6 +10,8 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("RtAudioStreamer");
 
     AudioStreamer streamer;
+    streamer.printListOfDevices();
+
     unsigned int deviceId = 0;
     QList<unsigned int> channels({0,1});
 

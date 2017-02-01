@@ -7,6 +7,7 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" ) {
     SECTION("Initialization") {
         AudioStreamer streamer;
         unsigned int deviceId = 0;
+        streamer.printListOfDevices();
 
         if( streamer.getListOfDevices().size() > 0 ) {
             // Test numberOfInputChannels

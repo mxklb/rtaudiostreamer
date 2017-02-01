@@ -18,15 +18,13 @@ AudioStreamer::AudioStreamer(QObject *parent) : QObject(parent)
         activeDeviceId = settings.value("audiostreamer/activeDeviceId", rtAudio->getDefaultInputDevice()).toUInt();
     }
 #ifdef RTERROR_H
-    catch (RtError &error) {
+    catch( RtError &error )
 #else
-    catch ( RtAudioError& error ) {
+    catch( RtAudioError& error )
 #endif
-        error.printMessage();
-    }
+    { error.printMessage(); }
 
     setupDeviceList();
-    printListOfDevices();
     allocateRingBuffers( getInputChannelIds(activeDeviceId), processingBufferSize );
 
     // todo audioProcessing should be independant lib connected form outside ..
@@ -52,19 +50,17 @@ AudioStreamer::~AudioStreamer()
 void AudioStreamer::setupDeviceList()
 {
     devices.clear();
-    for (unsigned int i=0; i<rtAudio->getDeviceCount(); i++) {
+    for (unsigned int i = 0; i < rtAudio->getDeviceCount(); i++) {
         try {
             RtAudio::DeviceInfo info = rtAudio->getDeviceInfo(i);
             devices.push_back(info);
         }
 #ifdef RTERROR_H
-            catch (RtError &error) {
+        catch( RtError &error )
 #else
-            catch ( RtAudioError& error ) {
+        catch( RtAudioError &error )
 #endif
-            error.printMessage();
-            break;
-        }
+        { error.printMessage(); break; }
     }
 }
 
@@ -178,13 +174,11 @@ bool AudioStreamer::startStream(StreamSettings settings)
       rtAudio->startStream();
     }
 #ifdef RTERROR_H
-    catch (RtError &error) {
+    catch( RtError &error )
 #else
-    catch ( RtAudioError& error ) {
+    catch( RtAudioError& error )
 #endif
-      error.printMessage();
-      return false;
-    }
+    { error.printMessage(); return false; }
     return true;
 }
 
@@ -196,9 +190,9 @@ bool AudioStreamer::stopStream()
     if( rtAudio->isStreamRunning() ) {
         try { rtAudio->stopStream(); }
 #ifdef RTERROR_H
-        catch ( RtError& error )
+        catch( RtError& error )
 #else
-        catch ( RtAudioError& error )
+        catch( RtAudioError& error )
 #endif
         { error.printMessage(); return false; }
     }
@@ -206,9 +200,9 @@ bool AudioStreamer::stopStream()
     if( rtAudio->isStreamOpen() ) {
         try { rtAudio->closeStream(); }
 #ifdef RTERROR_H
-        catch ( RtError& error )
+        catch( RtError& error )
 #else
-        catch ( RtAudioError& error )
+        catch( RtAudioError& error )
 #endif
         { error.printMessage(); return false; };
     }
