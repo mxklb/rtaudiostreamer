@@ -3,8 +3,12 @@ contains(catchTests, true) {
     CONFIG(debug, debug|release) {
         message(Activating gcov coverage compiler flags -> $$TARGET)
         QMAKE_CXXFLAGS += -fprofile-arcs -ftest-coverage
-        equals(QMAKE_CXX, g++): QMAKE_LFLAGS += -lgcov
-        QMAKE_LFLAGS += --coverage
+        QMAKE_LFLAGS += --coverage -fno-inline
+        equals(QMAKE_CXX, g++) { 
+            QMAKE_LFLAGS += -lgcov
+            QMAKE_LFLAGS += --coverage -fno-inline-small-functions
+            QMAKE_LFLAGS += --coverage -fno-default-inline
+        }
         # Add clean -> remove .gcda .gcno
         for(source, SOURCES) {
             gcnoFile = $$replace(source, .cpp, .gcno)
