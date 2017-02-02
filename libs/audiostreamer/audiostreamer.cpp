@@ -170,7 +170,7 @@ bool AudioStreamer::startStream(StreamSettings settings)
     cout << endl;
 
     try { // todo: make audio format a config option
-      rtAudio->openStream(NULL, &parameters, RTAUDIO_SINT16, settings.hwSampleRate, &settings.hwBufferSize, &audioStreamCallback, &acquisitionBuffer);
+      rtAudio->openStream(NULL, &parameters, RTAUDIO_SINT16, settings.hwSampleRate, &settings.hwBufferSize, &AudioCallback::interleaved, &acquisitionBuffer);
       rtAudio->startStream();
     }
 #ifdef RTERROR_H

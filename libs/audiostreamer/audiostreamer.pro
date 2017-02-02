@@ -3,12 +3,13 @@ TARGET = audiostreamer
 CONFIG += qt
 QT += core
 
-SOURCES += audiostreamer.cpp
-SOURCES += audioprocessing.cpp
-HEADERS += audiostreamer.h
-HEADERS += audiocallback.h
-HEADERS += audioprocessing.h
-HEADERS += streamsettings.h
+SOURCES += audiostreamer.cpp \
+    audioprocessing.cpp \
+    audiocallback.cpp
+HEADERS += audiostreamer.h \
+    audioprocessing.h \
+    streamsettings.h \
+    audiocallback.h
 
 include(../lib.pri)
 

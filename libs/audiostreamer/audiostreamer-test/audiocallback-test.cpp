@@ -23,7 +23,7 @@ TEST_CASE( "AudioCallback", "[RtAudio]" ) {
         }
 
         REQUIRE(buffer.frameCounter == 0);
-        REQUIRE(audioStreamCallback(NULL, inputBuffer, numOfFrames, 1., 0, &buffer) == 0 );
+        REQUIRE(AudioCallback::interleaved(NULL, inputBuffer, numOfFrames, 1., 0, &buffer) == 0 );
 
         // Check frame counter
         REQUIRE(buffer.frameCounter == numOfFrames);
