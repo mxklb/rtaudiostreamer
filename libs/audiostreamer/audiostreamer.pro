@@ -10,6 +10,8 @@ HEADERS += audiocallback.h
 HEADERS += audioprocessing.h
 HEADERS += streamsettings.h
 
+include(../lib.pri)
+
 LIBS += -lrtaudio
 macx { 
     INCLUDEPATH += /usr/local/include/
@@ -21,5 +23,3 @@ customLibs = ../audiobuffer/audiobuffer
 
 # Load and link custom libs
 include(../loadlibs.pri)
-
-include(../lib.pri)

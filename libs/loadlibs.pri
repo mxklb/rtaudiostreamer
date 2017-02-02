@@ -42,6 +42,9 @@ for(lib, customLibs) {
             LIBS += -F$${OUTDIR}/ -framework $${LIBNAME}
             PRE_TARGETDEPS += $${OUTDIR}/$${LIBNAME}.framework
             INCLUDEPATH += -F$${LIBDIR}
+            #equals(TEMPLATE, app) {
+            #    QMAKE_POST_LINK += install_name_tool -add_rpath @executable_path/../Frameworks/$${LIBNAME}.framework $$OUT_PWD/$${TARGET}.app/Contents/MacOS/$${TARGET}
+            #}
         }
         else {
             LIBS += -L$${OUTDIR}/ -l$${LIBNAME}
@@ -51,7 +54,7 @@ for(lib, customLibs) {
     }
 }
 
-macx { # Deploy all linked frameworks to target bundle - todo: make syslibs.pri for external libs!
+macx { # Deploy all linked frameworks to target bundle
     APP_LIB_FILES.files = $$frameworks
     APP_LIB_FILES.path = Contents/Frameworks/
     QMAKE_BUNDLE_DATA += APP_LIB_FILES
