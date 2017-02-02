@@ -50,18 +50,19 @@ AudioStreamer::~AudioStreamer()
 void AudioStreamer::setupDeviceList()
 {
     devices.clear();
-    for (unsigned int i = 0; i < rtAudio->getDeviceCount(); i++) {
-        try {
+
+    try {
+        for (unsigned int i = 0; i < rtAudio->getDeviceCount(); i++) {
             RtAudio::DeviceInfo info = rtAudio->getDeviceInfo(i);
             devices.push_back(info);
         }
-#ifdef RTERROR_H
-        catch( RtError &error )
-#else
-        catch( RtAudioError &error )
-#endif
-        { error.printMessage(); break; }
     }
+#ifdef RTERROR_H
+    catch( RtError &error )
+#else
+    catch( RtAudioError &error )
+#endif
+    { error.printMessage(); }
 }
 
 /*
@@ -105,15 +106,17 @@ QList<unsigned int> AudioStreamer::getInputChannelIds(int deviceId)
 }
 
 /*
- * Returns the number of input channels for the given device.
- * If the given id <= -1 returns the input channels of the active device.
+ * Returns the number of input channels for the active device (deviceId == -1).
+ * If the given deviceId > -1 returns the input channels of this device.
  */
 unsigned int AudioStreamer::numberOfInputChannels(int deviceId)
 {
+    unsigned int channelCount = 0;
     unsigned int id = activeDeviceId;
-    if( deviceId > -1 && deviceId < devices.size() )
-        id = deviceId;
-    return devices.at(id).inputChannels;
+    if( deviceId > -1 ) id = deviceId;
+    if( !devices.isEmpty() && id < (unsigned int)devices.size() )
+        channelCount = devices.at(id).inputChannels;
+    return channelCount;
 }
 
 /*
