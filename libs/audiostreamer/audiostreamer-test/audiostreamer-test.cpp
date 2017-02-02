@@ -9,7 +9,7 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" ) {
         unsigned int deviceId = 0;
         streamer.printListOfDevices();
 
-        if( streamer.getListOfDevices().size() > 0 ) {
+        if( !streamer.getListOfDevices().isEmpty() ) {
             // Test numberOfInputChannels
             streamer.setActiveDevice(deviceId);
             unsigned int numOfInputChannels = streamer.getListOfDevices().at(deviceId).inputChannels;
@@ -36,7 +36,7 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" ) {
 
     SECTION("Streaming") {
         AudioStreamer streamer;
-        if( streamer.getListOfDevices().size() > 0 ) {
+        if( !streamer.getListOfDevices().isEmpty() ) {
             if( streamer.startStream() ) {
                 usleep(200);
                 REQUIRE(streamer.stopStream() == true);
