@@ -114,7 +114,7 @@ unsigned int AudioStreamer::numberOfInputChannels(int deviceId)
     unsigned int channelCount = 0;
     unsigned int id = activeDeviceId;
     if( deviceId > -1 ) id = deviceId;
-    if( !devices.isEmpty() && id < (unsigned int)devices.size() )
+    if( devices.size() > 0 && id < (unsigned int)devices.size() )
         channelCount = devices.at(id).inputChannels;
     return channelCount;
 }
@@ -143,7 +143,7 @@ void AudioStreamer::setActiveDevice(unsigned int id, QList<unsigned int> channel
 {
     stopStream();
     activeDeviceId = id;
-    if( channels.isEmpty() ) channels = getInputChannelIds();
+    //if( channels.isEmpty() ) channels = getInputChannelIds();
     allocateRingBuffers(channels, acquisitionBuffer.ringBufferSize);
 }
 

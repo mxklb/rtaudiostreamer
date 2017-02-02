@@ -19,7 +19,7 @@
  * So only the at least needed channels are streamed!
  */
 int AudioCallback::interleaved( void *outputBuffer, void *inputBuffer, unsigned int hwFrameCount,
-                                        double streamTime, RtAudioStreamStatus status, void *streamBuffers )
+                                double streamTime, RtAudioStreamStatus status, void *streamBuffers )
 {
     Q_UNUSED(outputBuffer)
     Q_UNUSED(streamTime)
