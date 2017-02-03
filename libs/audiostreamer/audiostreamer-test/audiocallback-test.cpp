@@ -68,5 +68,5 @@ TEST_CASE( "AudioCallback", "[RtAudio]" ) {
             REQUIRE(AudioCallback::interleaved(NULL, hwBuffer, numOfFrames, 1., 0, &buffer) == 0 );
             REQUIRE(buffer.frameCounter == 0);
         }
-    } else WARN("Tests disabled: RtAudio didn't find any channels!");
+    } else WARN("Tests disabled: RtAudio no audio device found!");
 }

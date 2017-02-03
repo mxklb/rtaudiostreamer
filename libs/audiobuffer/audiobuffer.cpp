@@ -3,7 +3,7 @@
 /*
  * Allocate one ringbuffer with size capatcity for each given channel.
  */
-void AudioBuffer::allocateRingbuffers(unsigned int size, QList<unsigned int> channels)
+void AudioBuffer::allocateRingbuffers(unsigned int size, QList<unsigned int> channels, double value)
 {
     ringBufferSize = size;
     ringBufferContainer.clear();
@@ -11,7 +11,7 @@ void AudioBuffer::allocateRingbuffers(unsigned int size, QList<unsigned int> cha
     activeChannelIds = channels;
 
     for( unsigned int i=0; i<numberOfChannels(); i++ ) {
-        QVector<double> buffer(ringBufferSize, 0.0);
+        QVector<double> buffer(ringBufferSize, value);
         ringBufferContainer.push_back(buffer);
     }
 }

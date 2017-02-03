@@ -31,7 +31,7 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" ) {
                     else REQUIRE(streamer.getInputChannelIds().at(ch) == channels.at(numOfInputChannels-1-ch));
                 }
             }
-        } else WARN("Testing fails: RtAudio didn't find any channels!");
+        } else WARN("Testing disabled: RtAudio no audio device found!");
     }
 
     SECTION("Streaming") {
@@ -41,6 +41,6 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" ) {
                 usleep(200);
                 REQUIRE(streamer.stopStream() == true);
             } else WARN("Streaming failed: RtAudio can't start stream!");
-        } else WARN("Testing disabled: RtAudio didn't find any channels!");
+        } else WARN("Testing disabled: RtAudio no audio device found!");
     }
 }

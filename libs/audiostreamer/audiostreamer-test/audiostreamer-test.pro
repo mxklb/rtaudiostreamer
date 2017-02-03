@@ -1,7 +1,8 @@
 TARGET = audiostreamer-test
 SOURCES += \
     audiostreamer-test.cpp \
-    audiocallback-test.cpp
+    audiocallback-test.cpp \
+    audioprocessing-test.cpp
 
 include($$PROJECT_DIR/libs/test.pri)
 
