@@ -37,8 +37,9 @@ TEST_CASE( "AudioProcessing", "[Algorithms]" ) {
     }
 
     SECTION("Full processing pipeline") {
-        AudioProcessing processing;
-        processing.processAudio(&buffer);
+        AudioProcessing* processing = new AudioProcessing(NULL);
+        processing->processAudio(&buffer);
+        delete processing;
     }
 }
 

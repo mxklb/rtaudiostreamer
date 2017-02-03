@@ -15,6 +15,7 @@ AudioBuffer initBuffers(unsigned int hwBufferSize, unsigned int audioBufferSize,
     unsigned int index = 0;
     for( unsigned int i=0; i<numOfFrames; i++) {
         foreach (unsigned int ch, channels) {
+            Q_UNUSED(ch)
             hwBuffer[index++] = i;
         }
     }
@@ -27,11 +28,10 @@ TEST_CASE( "AudioCallback", "[RtAudio]" ) {
         unsigned int bufferSize = 1024;
         unsigned int numOfFrames = 256;
         unsigned int numOfChannels = streamer.numberOfInputChannels();
+        signed short* hwBuffer = new signed short[numOfFrames*numOfChannels];
+        AudioBuffer buffer = initBuffers(numOfFrames, bufferSize, &streamer, hwBuffer);
 
-        SECTION("Correct Buffer Size") {
-            signed short* hwBuffer = new signed short[numOfFrames*numOfChannels];
-            AudioBuffer buffer = initBuffers(numOfFrames, bufferSize, &streamer, hwBuffer);
-
+        SECTION("With buffer size > hw buffer") {
             REQUIRE(buffer.frameCounter == 0);
             REQUIRE(AudioCallback::interleaved(NULL, hwBuffer, numOfFrames, 1., 0, &buffer) == 0 );
 
@@ -44,10 +44,9 @@ TEST_CASE( "AudioCallback", "[RtAudio]" ) {
             }
         }
 
-        SECTION("Buffer Too Small") {
+        SECTION("With buffer size < hw buffer") {
             bufferSize = 128;
-            signed short* hwBuffer = new signed short[numOfFrames*numOfChannels];
-            AudioBuffer buffer = initBuffers(numOfFrames, bufferSize, &streamer, hwBuffer);
+            buffer = initBuffers(numOfFrames, bufferSize, &streamer, hwBuffer);
 
             REQUIRE(AudioCallback::interleaved(NULL, hwBuffer, numOfFrames, 1., 0, &buffer) == 0 );
 
@@ -60,13 +59,14 @@ TEST_CASE( "AudioCallback", "[RtAudio]" ) {
             }
         }
 
-        SECTION("Zero Channel Count") {
-            signed short* hwBuffer = new signed short[numOfFrames*numOfChannels];
-            AudioBuffer buffer = initBuffers(numOfFrames, bufferSize, &streamer, hwBuffer);
+        SECTION("Without channels") {
             buffer.allocateRingbuffers(bufferSize);
             REQUIRE(buffer.ringBufferContainer.isEmpty());
             REQUIRE(AudioCallback::interleaved(NULL, hwBuffer, numOfFrames, 1., 0, &buffer) == 0 );
             REQUIRE(buffer.frameCounter == 0);
         }
+
+        delete[] hwBuffer;
+
     } else WARN("Tests disabled: RtAudio no audio device found!");
 }
