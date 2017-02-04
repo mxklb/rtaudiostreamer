@@ -131,20 +131,20 @@ void AudioStreamer::allocateRingBuffers(QList<unsigned int> channels, unsigned i
 /*
  * Changes the channel ids used for audio streaming.
  */
-void AudioStreamer::setActiveChannels(QList<unsigned int> channels)
+void AudioStreamer::setActiveChannels(QList<unsigned int> channelIds)
 {
-    setActiveDevice(activeDeviceId, channels);
+    setActiveDevice(activeDeviceId, channelIds);
 }
 
 /*
  * Switches the audio device to be used. Stops running stream and resets buffers.
  */
-void AudioStreamer::setActiveDevice(unsigned int id, QList<unsigned int> channels)
+void AudioStreamer::setActiveDevice(unsigned int id, QList<unsigned int> channelIds)
 {
     stopStream();
     activeDeviceId = id;
     //if( channels.isEmpty() ) channels = getInputChannelIds();
-    allocateRingBuffers(channels, acquisitionBuffer.ringBufferSize);
+    allocateRingBuffers(channelIds, acquisitionBuffer.ringBufferSize);
 }
 
 /*

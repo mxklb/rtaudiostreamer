@@ -11,7 +11,7 @@
 class AudioBuffer
 {
  public:
-    AudioBuffer() : frameCounter(0), ringBufferSize(4096) {}
+    AudioBuffer();
 
     unsigned long frameCounter;
     unsigned int ringBufferSize;

@@ -22,8 +22,8 @@ public:
     unsigned int numberOfInputChannels(int deviceId = -1);
     QList<unsigned int> getInputChannelIds(int deviceId = -1);
 
-    void setActiveDevice(unsigned int deviceId, QList<unsigned int> channels = QList<unsigned int>());
-    void setActiveChannels(QList<unsigned int> channels);
+    void setActiveDevice(unsigned int deviceId, QList<unsigned int> channelIds = QList<unsigned int>());
+    void setActiveChannels(QList<unsigned int> channelIds);
 
     bool startStream(StreamSettings settings = StreamSettings());
     bool stopStream();

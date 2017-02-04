@@ -1,5 +1,11 @@
 #include "audiobuffer.h"
 
+AudioBuffer::AudioBuffer() : frameCounter(0), ringBufferSize(4096)
+{
+    frameCounter = 0;
+    ringBufferSize = 4096;
+}
+
 /*
  * Allocate one ringbuffer with size capatcity for each given channel.
  */
