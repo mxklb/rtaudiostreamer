@@ -47,8 +47,6 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" ) {
                 REQUIRE(streamer->stopStream() == true);
             } else {
                 WARN("Streaming failed: RtAudio can't start stream!");
-                delete streamer;
-                streamer = NULL;
                 AudioStreamerMoc streamerMoc;
                 // Dummy call to slotUpdateProcessingBuffer
                 streamerMoc.updateProcessingBuffer();
