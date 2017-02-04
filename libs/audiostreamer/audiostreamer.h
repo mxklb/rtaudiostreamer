@@ -45,7 +45,7 @@ private:
     QTimer *processingTimer;
     AudioProcessing audioProcessing;
 
-private slots:
+protected slots:
     void slotUpdateProcessingBuffer();
 };
 
