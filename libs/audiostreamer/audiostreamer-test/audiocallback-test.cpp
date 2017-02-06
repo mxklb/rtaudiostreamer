@@ -9,7 +9,7 @@ AudioBuffer initBuffers(unsigned int hwBufferSize, unsigned int audioBufferSize,
     AudioBuffer buffer;
     unsigned int numOfFrames = hwBufferSize;
     QList<unsigned int> channels = streamer->getInputChannelIds();
-    buffer.allocateRingbuffers(audioBufferSize, channels);
+    CHECK_NOFAIL( buffer.allocateRingbuffers(audioBufferSize, channels) );
 
     // Init interleaved inputBuffer. Each channel values [0..numOfFrames]
     unsigned int index = 0;
@@ -34,28 +34,27 @@ TEST_CASE( "AudioCallback", "[RtAudio]" ) {
         SECTION("With buffer size > hw buffer") {
             REQUIRE(buffer.frameCounter == 0);
             REQUIRE(AudioCallback::interleaved(NULL, hwBuffer, numOfFrames, 1., 0, &buffer) == 0 );
-
-            // Check frame counter
-            REQUIRE(buffer.frameCounter == numOfFrames);
-
-            // Check if buffer is correctly filled
-            for( unsigned int ch=0; ch<numOfChannels; ch++) {
-                REQUIRE(buffer.ringBufferContainer.at(ch)[2] == 2);
+            if( buffer.numberOfChannels() > 0 ) {
+                // Check frame counter
+                REQUIRE(buffer.frameCounter == numOfFrames);
+                // Check if buffer is correctly filled
+                for( unsigned int ch=0; ch<numOfChannels; ch++) {
+                    REQUIRE(buffer.ringBufferContainer.at(ch)[2] == 2);
+                }
             }
         }
 
         SECTION("With buffer size < hw buffer") {
             bufferSize = 128;
             buffer = initBuffers(numOfFrames, bufferSize, &streamer, hwBuffer);
-
             REQUIRE(AudioCallback::interleaved(NULL, hwBuffer, numOfFrames, 1., 0, &buffer) == 0 );
-
-            // Check frame counter
-            REQUIRE(buffer.frameCounter == bufferSize);
-
-            // Check if buffer is correctly filled
-            for( unsigned int ch=0; ch<numOfChannels; ch++) {
-                REQUIRE(buffer.ringBufferContainer.at(ch)[2] == 2);
+            if( buffer.numberOfChannels() > 0 ) {
+                // Check frame counter
+                REQUIRE(buffer.frameCounter == bufferSize);
+                // Check if buffer is correctly filled
+                for( unsigned int ch=0; ch<numOfChannels; ch++) {
+                    REQUIRE(buffer.ringBufferContainer.at(ch)[2] == 2);
+                }
             }
         }
 

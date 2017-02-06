@@ -16,7 +16,7 @@
  * parameters.nChannels = highestChannelId - lowestChannelId + 1;
  * parameters.firstChannel = lowestChannelId;
  *
- * So only the at least needed channels are streamed!
+ * in advance. So only the at least needed channels are streamed!
  */
 int AudioCallback::interleaved( void *outputBuffer, void *inputBuffer, unsigned int hwFrameCount,
                                 double streamTime, RtAudioStreamStatus status, void *streamBuffers )

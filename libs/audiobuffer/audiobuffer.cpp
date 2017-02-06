@@ -1,6 +1,6 @@
 #include "audiobuffer.h"
 
-AudioBuffer::AudioBuffer() : frameCounter(0), ringBufferSize(4096)
+AudioBuffer::AudioBuffer()
 {
     frameCounter = 0;
     ringBufferSize = 4096;
@@ -9,7 +9,7 @@ AudioBuffer::AudioBuffer() : frameCounter(0), ringBufferSize(4096)
 /*
  * Allocate one ringbuffer with size capatcity for each given channel.
  */
-void AudioBuffer::allocateRingbuffers(unsigned int size, QList<unsigned int> channels, double value)
+bool AudioBuffer::allocateRingbuffers(unsigned int size, QList<unsigned int> channels, double value)
 {
     ringBufferSize = size;
     ringBufferContainer.clear();
@@ -20,6 +20,8 @@ void AudioBuffer::allocateRingbuffers(unsigned int size, QList<unsigned int> cha
         QVector<double> buffer(ringBufferSize, value);
         ringBufferContainer.push_back(buffer);
     }
+
+    return !channels.isEmpty();
 }
 
 /*

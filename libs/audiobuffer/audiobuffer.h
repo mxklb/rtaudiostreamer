@@ -18,7 +18,7 @@ class AudioBuffer
     QList<unsigned int> activeChannelIds;
     QList<QVector<double> > ringBufferContainer;
 
-    void allocateRingbuffers(unsigned int size, QList<unsigned int> channels = QList<unsigned int>(), double value = 0.0);
+    bool allocateRingbuffers(unsigned int size, QList<unsigned int> channels = QList<unsigned int>(), double value = 0.0);
     bool rotateRingbuffers(unsigned int delta);
     unsigned int activeChannelId(unsigned int ch);
     unsigned int numberOfChannels();

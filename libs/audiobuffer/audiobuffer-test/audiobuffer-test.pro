@@ -1,5 +1,5 @@
 TARGET = audiobuffer-test
-SOURCES += main.cpp
+SOURCES += audiobuffer-test.cpp
 
 include($$PROJECT_DIR/libs/test.pri)
 

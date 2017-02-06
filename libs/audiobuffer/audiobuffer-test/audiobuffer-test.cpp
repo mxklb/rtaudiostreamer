@@ -5,21 +5,23 @@
 TEST_CASE( "RingBuffer", "[AudioBuffer]" )
 {
     AudioBuffer* buffer = new AudioBuffer();
+
     SECTION("Allocation") {
-        buffer->allocateRingbuffers(1024);
+        CHECK_NOFAIL(buffer->allocateRingbuffers(1024));
         REQUIRE(buffer->numberOfChannels() == 0);
         REQUIRE(buffer->ringBufferContainer.size() == 0);
         REQUIRE(buffer->ringBufferSize == 1024);
     }
+
     SECTION("Channels") {
         QList<unsigned int> channels({1,5});
-        buffer->allocateRingbuffers(1024, channels);
+        REQUIRE(buffer->allocateRingbuffers(1024, channels));
         REQUIRE(buffer->numberOfChannels() == channels.size());
         REQUIRE(buffer->ringBufferContainer.size() == channels.size());
-
         REQUIRE(buffer->activeChannelId(1) == channels.at(1));
         REQUIRE(buffer->activeChannelId(2) == 2);
     }
+
     SECTION("Rotation") {
         QList<unsigned int> channels({0});
         buffer->allocateRingbuffers(10, channels);
