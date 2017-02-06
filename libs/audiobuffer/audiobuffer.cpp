@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "audiobuffer.h"
 
 AudioBuffer::AudioBuffer()

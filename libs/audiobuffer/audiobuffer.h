@@ -1,7 +1,6 @@
 #ifndef AUDIOBUFFER_H
 #define AUDIOBUFFER_H
 
-#include <algorithm>
 #include <QVector>
 #include <QList>
 

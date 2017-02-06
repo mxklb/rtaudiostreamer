@@ -6,13 +6,13 @@
 #include "audioprocessing.h"
 
 TEST_CASE( "AudioProcessing", "[Algorithms]" ) {
-    AudioBuffer buffer;
+    AudioBuffer* buffer = new AudioBuffer();
     QList<unsigned int> channels;
     channels.push_back(0);
     channels.push_back(1);
-    buffer.allocateRingbuffers(100, channels, -32768/2);
+    buffer->allocateRingbuffers(100, channels, -32768/2);
 
-    QList<double> amplitudes = AudioProcessing::absoluteAmplitudes(&buffer);
+    QList<double> amplitudes = AudioProcessing::absoluteAmplitudes(buffer);
     QList<double> loudness = AudioProcessing::logLoudness(amplitudes);
 
     SECTION("Amplitude calculation") {
@@ -38,9 +38,11 @@ TEST_CASE( "AudioProcessing", "[Algorithms]" ) {
 
     SECTION("Full processing pipeline") {
         AudioProcessing* processing = new AudioProcessing(NULL);
-        processing->processAudio(&buffer);
+        processing->processAudio(buffer);
         delete processing;
     }
+
+    delete buffer;
 }
 
 #endif // AUDIOPROCESSINGTEST_CPP

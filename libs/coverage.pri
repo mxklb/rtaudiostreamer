@@ -6,8 +6,7 @@ contains(catchTests, true) {
         QMAKE_LFLAGS += --coverage -fno-inline
         equals(QMAKE_CXX, g++) { 
             QMAKE_LFLAGS += -lgcov
-            QMAKE_LFLAGS += --coverage -fno-inline-small-functions
-            QMAKE_LFLAGS += --coverage -fno-default-inline
+            QMAKE_LFLAGS += --coverage -fno-inline-small-functions -fno-default-inline
         }
         # Add clean -> remove .gcda .gcno
         for(source, SOURCES) {
