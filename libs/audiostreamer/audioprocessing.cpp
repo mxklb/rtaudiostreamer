@@ -10,6 +10,32 @@ AudioProcessing::AudioProcessing(QObject *parent) : QObject(parent)
 {
 }
 
+void AudioProcessing::processRawAudio(QVector<signed int> *rawData, unsigned int numOfChannels)
+{
+    updateProcessingBuffer(rawData, numOfChannels);
+    processAudio(&audioBuffers);
+}
+
+
+void AudioProcessing::updateProcessingBuffer(QVector<signed int> *rawData, unsigned int numOfChannels)
+{
+    unsigned int lowestChannelId = audioBuffers.activeChannelId(0);
+    unsigned int hwBufferSize = rawData->size() / numOfChannels; // !!! stimmt nicht immer !!!
+    unsigned int numberOfFrames = hwBufferSize;
+
+    if( !audioBuffers.rotateRingbuffers(hwBufferSize) ) {
+        numberOfFrames = audioBuffers.ringBufferSize;
+    }
+
+    for( unsigned int ch=0; ch<numOfChannels; ch++ ) {
+        unsigned int channelId = audioBuffers.activeChannelId(ch) - lowestChannelId;
+        QVector<double> *buffer = &audioBuffers.ringBufferContainer[ch];
+        for( unsigned int i=0; i<numberOfFrames; i++ ) {
+            (*buffer)[i] = (double)rawData->at(i * numOfChannels + channelId);
+        }
+    }
+}
+
 /*
  * Perform audio analysis on the given buffer.
  */
@@ -27,7 +53,7 @@ void AudioProcessing::processAudio(AudioBuffer *buffer)
         std::cerr << " | Ch" << channel << ": " << std::setiosflags(std::ios::fixed) << std::setprecision(7)
                   << amplitudes[ch] << " [" << std::setprecision(1) << loudness[ch] << " dB]";
     }
-    std::cerr << "\r";
+    std::cerr << endl;// "\r";
 }
 
 /*
@@ -64,7 +90,7 @@ QList<double> AudioProcessing::logLoudness(QList<double> amplitudes)
 {
     QList<double> loudness;
     foreach (double amplitude, amplitudes) {
-        if( amplitude == 0.0 )
+        if( amplitude < 7.15256e-07 )
             amplitude = 7.15256e-07; // gateing ?
         loudness.push_back(10*log10(amplitude));
     }

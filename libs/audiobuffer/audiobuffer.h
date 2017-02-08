@@ -4,6 +4,8 @@
 #include <QVector>
 #include <QList>
 
+#include "concurrentqueue.h"
+
 /*
  * This class handles ring buffers for multi channel audio buffering.
  */
@@ -16,6 +18,7 @@ class AudioBuffer
     unsigned int ringBufferSize;
     QList<unsigned int> activeChannelIds;
     QList<QVector<double> > ringBufferContainer;
+    moodycamel::ConcurrentQueue<signed short>* rawAudioBuffer;
 
     bool allocateRingbuffers(unsigned int size, QList<unsigned int> channels = QList<unsigned int>(), double value = 0.0);
     bool rotateRingbuffers(unsigned int delta);

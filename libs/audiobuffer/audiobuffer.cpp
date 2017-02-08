@@ -1,10 +1,14 @@
 #include <algorithm>
 #include "audiobuffer.h"
 
+#include <iostream>
+
+
 AudioBuffer::AudioBuffer()
 {
     frameCounter = 0;
     ringBufferSize = 4096;
+    rawAudioBuffer = NULL; //new moodycamel::ConcurrentQueue<signed short>(ringBufferSize);
 }
 
 /*
@@ -16,6 +20,26 @@ bool AudioBuffer::allocateRingbuffers(unsigned int size, QList<unsigned int> cha
     ringBufferContainer.clear();
     std::sort(channels.begin(), channels.end());
     activeChannelIds = channels;
+
+    unsigned int rawBufferSize = numberOfChannels()*size;
+    QVector<signed short> initializer(rawBufferSize, 0);
+
+    if( rawAudioBuffer != NULL )
+        delete rawAudioBuffer;
+    rawAudioBuffer = new moodycamel::ConcurrentQueue<signed short>(rawBufferSize,1,1);
+
+    std::cout << " Size approx (before enqueue): " << rawAudioBuffer->size_approx() << std::endl;
+    if( rawAudioBuffer->enqueue_bulk(initializer.data(), rawBufferSize) ) {
+        std::cout << " Size approx (after enqueue): " << rawAudioBuffer->size_approx() << std::endl;
+        // return false;
+        QVector<signed short> tester(rawBufferSize, 1);
+        if( rawAudioBuffer->try_dequeue_bulk(tester.data(), rawBufferSize) == rawBufferSize) {
+            std::cout << " Size approx (after dequeue): " << rawAudioBuffer->size_approx() << std::endl;
+            foreach (signed short value, tester) {
+                std::cout << value << ", " << std::endl;
+            }
+        }
+    }
 
     for( unsigned int i=0; i<numberOfChannels(); i++ ) {
         QVector<double> buffer(ringBufferSize, value);

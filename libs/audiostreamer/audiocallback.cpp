@@ -30,26 +30,19 @@ int AudioCallback::interleaved( void *outputBuffer, void *inputBuffer, unsigned 
     signed short *samples = (signed short*)inputBuffer;
     AudioBuffer *audioBuffers = (AudioBuffer*)streamBuffers;
     unsigned int numberOfChannels = audioBuffers->numberOfChannels();
-    unsigned int lowestChannelId = audioBuffers->activeChannelId(0);
-    unsigned int numberOfFrames = hwFrameCount;
 
     if( numberOfChannels == 0 ) {
         std::cout << "Zero channels detected." << std::endl;
         return 0;
     }
 
-    if( !audioBuffers->rotateRingbuffers(numberOfFrames) ) {
-        numberOfFrames = audioBuffers->ringBufferSize;
-    }
+    if( !audioBuffers->rawAudioBuffer->try_enqueue_bulk(samples, hwFrameCount*numberOfChannels) ) {
+        std::cout << "try_enqueue_bulk fails: " << audioBuffers->rawAudioBuffer->size_approx() << std::endl;
+        // Wake ringbuffer filling thread!
 
-    for( unsigned int ch=0; ch<numberOfChannels; ch++ ) {
-        unsigned int channelId = audioBuffers->activeChannelId(ch) - lowestChannelId;
-        QVector<double> *buffer = &audioBuffers->ringBufferContainer[ch];
-        for( unsigned int i=0; i<numberOfFrames; i++ ) {
-            (*buffer)[i] = (double)samples[i * numberOfChannels + channelId];
-        }
     }
+    audioBuffers->frameCounter += hwFrameCount;
+    //std::cout << audioBuffers->rawAudioBuffer->size_approx() << std::endl;
 
-    audioBuffers->frameCounter += numberOfFrames;
     return 0;
 }

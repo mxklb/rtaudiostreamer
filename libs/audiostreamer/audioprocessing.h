@@ -15,6 +15,13 @@ public:
 
 public slots:
     void processAudio(AudioBuffer *buffer);
+    void processRawAudio(QVector<signed int> *rawData, unsigned int numOfChannels);
+
+private:
+    void updateProcessingBuffer(QVector<signed int> *rawData, unsigned int numOfChannels);
+
+public:
+    AudioBuffer audioBuffers;
 };
 
 #endif // AUDIOPROCESSING_H

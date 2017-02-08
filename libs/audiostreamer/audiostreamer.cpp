@@ -10,7 +10,7 @@ using namespace std;
 AudioStreamer::AudioStreamer(QObject *parent) : QObject(parent)
 {
     QSettings settings;
-    unsigned int processingInterval = settings.value("audiostreamer/processingInterval", 25).toUInt();
+    unsigned int processingInterval = settings.value("audiostreamer/processingInterval", 100).toUInt();
     unsigned int processingBufferSize = settings.value("audiostreamer/processingBufferSize", 8192).toUInt();
 
     try {
@@ -29,6 +29,7 @@ AudioStreamer::AudioStreamer(QObject *parent) : QObject(parent)
 
     // todo audioProcessing should be independant lib connected form outside ..
     connect(this, SIGNAL(triggerAudioProcessing(AudioBuffer*)), &audioProcessing, SLOT(processAudio(AudioBuffer*)));
+    connect(this, SIGNAL(triggerAudioProcessing(QVector<signed int>*, unsigned int)), &audioProcessing, SLOT(processRawAudio(QVector<signed int>*, unsigned int)));
 
     processingTimer = new QTimer(this);
     connect(processingTimer, SIGNAL(timeout()), this, SLOT(slotUpdateProcessingBuffer()));
@@ -125,7 +126,8 @@ unsigned int AudioStreamer::numberOfInputChannels(int deviceId)
 void AudioStreamer::allocateRingBuffers(QList<unsigned int> channels, unsigned int size)
 {
     acquisitionBuffer.allocateRingbuffers(size, channels);
-    processingBuffer.allocateRingbuffers(size, channels);
+    audioProcessing.audioBuffers.allocateRingbuffers(size, channels);
+    rawRtAudioFrames = new QVector<signed int>(size*channels.size(), 0);
 }
 
 /*
@@ -156,6 +158,8 @@ bool AudioStreamer::startStream(StreamSettings settings)
         cout << "Warning: Unable to start stream without input channels!" << endl;
         return false;
     }
+
+    streamSettings = settings;
 
     unsigned int firstChannelId = acquisitionBuffer.activeChannelIds.first();
     unsigned int lastChannelId = acquisitionBuffer.activeChannelIds.last();
@@ -219,10 +223,26 @@ bool AudioStreamer::stopStream()
 void AudioStreamer::slotUpdateProcessingBuffer()
 {
     if( rtAudio->isStreamRunning() && rtAudio->isStreamOpen() ) {
-        if( acquisitionBuffer.frameCounter / acquisitionBuffer.ringBufferSize > 1 ) {
-            processingBuffer = acquisitionBuffer;
-            cout << acquisitionBuffer.frameCounter;
+        unsigned int bufferSize = streamSettings.hwBufferSize * acquisitionBuffer.numberOfChannels();
+
+
+        size_t count = acquisitionBuffer.rawAudioBuffer->size_approx();
+        while( count > 0  ) {
+            count += acquisitionBuffer.rawAudioBuffer->try_dequeue_bulk(rawRtAudioFrames->data(), bufferSize);
+            audioProcessing.audioBuffers.frameCounter += count;
+
+            emit triggerAudioProcessing(rawRtAudioFrames, acquisitionBuffer.numberOfChannels());
+            //if( count == acquisitionBuffer.ringBufferSize )
+
+            //count = acquisitionBuffer.rawAudioBuffer->size_approx();
+
+            if( count == bufferSize )
+                cout << "dequeue finished" << endl;
+            count = acquisitionBuffer.rawAudioBuffer->size_approx();
+          //  bufferSize -= count;
         }
-        emit triggerAudioProcessing(&processingBuffer);
+
+        //audioProcessing.audioBuffers.frameCounter = acquisitionBuffer.frameCounter;
+
     }
 }

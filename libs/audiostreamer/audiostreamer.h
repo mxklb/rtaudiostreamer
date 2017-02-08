@@ -30,17 +30,19 @@ public:
 
 signals:
     void triggerAudioProcessing(AudioBuffer *audioData);
+    void triggerAudioProcessing(QVector<signed int> *rawData, unsigned int numOfChannels);
 
 private:
     RtAudio* rtAudio;
     unsigned int activeDeviceId;
     QList<RtAudio::DeviceInfo> devices;
+    StreamSettings streamSettings;
 
     void setupDeviceList();
 
     AudioBuffer acquisitionBuffer;
-    AudioBuffer processingBuffer;
     void allocateRingBuffers(QList<unsigned int> channels, unsigned int size = 8192);
+    QVector<signed int>* rawRtAudioFrames;
 
     QTimer *processingTimer;
     AudioProcessing audioProcessing;
