@@ -10,50 +10,68 @@ AudioProcessing::AudioProcessing(QObject *parent) : QObject(parent)
 {
 }
 
-void AudioProcessing::processRawAudio(QVector<signed int> *rawData, unsigned int numOfChannels)
+/*
+ * Updates the internally used audioBuffers: Using data from the given buffer.
+ */
+void AudioProcessing::slotUpdateRingBuffers(AudioBuffer *buffers)
 {
-    updateProcessingBuffer(rawData, numOfChannels);
-    processAudio(&audioBuffers);
+    if( audioBuffers.numberOfChannels() != buffers->numberOfChannels() ||
+        audioBuffers.ringBufferSize != buffers->ringBufferSize ) {
+        audioBuffers.allocateRingbuffers(buffers->ringBufferSize, buffers->activeChannelIds);
+    }
+
+    unsigned int numOfFrames = buffers->rawAudioFrames.size() / buffers->numberOfChannels();
+    updateRingBuffers(&buffers->rawAudioFrames, numOfFrames);
+    audioBuffers.frameCounter = buffers->frameCounter;
+    audioBuffers.timeStamp = buffers->timeStamp;
 }
 
-
-void AudioProcessing::updateProcessingBuffer(QVector<signed int> *rawData, unsigned int numOfChannels)
+/*
+ * Updates the audioBuffers member by shifting and inserting interleaved numOfFrames from given rawData.
+ * Note: audioBuffers.rawAudioFrames and audioBuffers.rawAudioBuffer gets not touched/copied!
+ */
+bool AudioProcessing::updateRingBuffers(QVector<signed int> *rawData, unsigned int numOfFrames)
 {
     unsigned int lowestChannelId = audioBuffers.activeChannelId(0);
-    unsigned int hwBufferSize = rawData->size() / numOfChannels; // !!! stimmt nicht immer !!!
-    unsigned int numberOfFrames = hwBufferSize;
+    unsigned int numOfChannels = audioBuffers.numberOfChannels();
 
-    if( !audioBuffers.rotateRingbuffers(hwBufferSize) ) {
-        numberOfFrames = audioBuffers.ringBufferSize;
+    if( (unsigned int)rawData->size() < numOfChannels*numOfFrames ) {
+        cerr << "Wrong rawData size detected!" << endl;
+        return false;
+    }
+
+    if( !audioBuffers.rotateRingbuffers(numOfFrames) ) {
+        numOfFrames = audioBuffers.ringBufferSize;
     }
 
     for( unsigned int ch=0; ch<numOfChannels; ch++ ) {
         unsigned int channelId = audioBuffers.activeChannelId(ch) - lowestChannelId;
         QVector<double> *buffer = &audioBuffers.ringBufferContainer[ch];
-        for( unsigned int i=0; i<numberOfFrames; i++ ) {
+        for( unsigned int i=0; i<numOfFrames; i++ ) {
             (*buffer)[i] = (double)rawData->at(i * numOfChannels + channelId);
         }
     }
+    return true;
 }
 
 /*
  * Perform audio analysis on the given buffer.
  */
-void AudioProcessing::processAudio(AudioBuffer *buffer)
+void AudioProcessing::slotAudioProcessing(AudioBuffer *buffers)
 {
     // todo: Here should be dynamic channel processing pipline ..
 
-    QList<double> amplitudes = absoluteAmplitudes(buffer);
+    QList<double> amplitudes = absoluteAmplitudes(buffers);
     QList<double> loudness = logLoudness(amplitudes);
 
     // Just print some results to the terminal ..
-    std::cerr << "[buffer " << buffer->frameCounter / buffer->ringBufferSize << "]\t";
-    for( unsigned int ch=0; ch<buffer->numberOfChannels(); ch++ ) {
-        unsigned int channel = buffer->activeChannelId(ch);
-        std::cerr << " | Ch" << channel << ": " << std::setiosflags(std::ios::fixed) << std::setprecision(7)
+    std::cerr << std::setprecision(2) << buffers->timeStamp << " [buffer " << buffers->frameCounter / buffers->ringBufferSize << "]\t";
+    for( unsigned int ch=0; ch<buffers->numberOfChannels(); ch++ ) {
+        unsigned int channel = buffers->activeChannelId(ch);
+        std::cerr << " | Ch" << channel << ": " << std::setiosflags(std::ios::fixed) << std::setprecision(10)
                   << amplitudes[ch] << " [" << std::setprecision(1) << loudness[ch] << " dB]";
     }
-    std::cerr << endl;// "\r";
+    std::cerr << "\r";
 }
 
 /*

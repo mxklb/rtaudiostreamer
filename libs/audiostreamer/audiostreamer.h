@@ -2,6 +2,7 @@
 #define AUDIOSTREAMER_H
 
 #include <RtAudio.h>
+#include <QElapsedTimer>
 #include <QObject>
 #include <QTimer>
 
@@ -12,6 +13,9 @@
 class AudioStreamer : public QObject
 {
     Q_OBJECT
+
+    friend class AudioCallback;
+
 public:
     explicit AudioStreamer(QObject *parent = 0);
     ~AudioStreamer();
@@ -28,9 +32,17 @@ public:
     bool startStream(StreamSettings settings = StreamSettings());
     bool stopStream();
 
+protected:
+    AudioBuffer* getAudioBuffers() { return &audioBuffer; }
+    void callbackFinished() { emit audioCallbackFinished(); }
+
+protected slots:
+    void slotUpdateBuffers();
+
 signals:
-    void triggerAudioProcessing(AudioBuffer *audioData);
-    void triggerAudioProcessing(QVector<signed int> *rawData, unsigned int numOfChannels);
+    void triggerAudioProcessing(AudioBuffer* buffer);
+    void grabbedAudioUpdated(AudioBuffer* buffer);
+    void audioCallbackFinished();
 
 private:
     RtAudio* rtAudio;
@@ -38,17 +50,13 @@ private:
     QList<RtAudio::DeviceInfo> devices;
     StreamSettings streamSettings;
 
-    void setupDeviceList();
-
-    AudioBuffer acquisitionBuffer;
-    void allocateRingBuffers(QList<unsigned int> channels, unsigned int size = 8192);
-    QVector<signed int>* rawRtAudioFrames;
-
-    QTimer *processingTimer;
+    AudioBuffer audioBuffer;
     AudioProcessing audioProcessing;
+    QElapsedTimer processingIntervalTimer;
+    unsigned int processingInterval;
 
-protected slots:
-    void slotUpdateProcessingBuffer();
+    void setupDeviceList();
+    void allocateRingBuffers(QList<unsigned int> channels, unsigned int size = 8192);
 };
 
 #endif // AUDIOSTREAMER_H

@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     QList<unsigned int> channels({0,1});
 
     streamer.setActiveDevice(deviceId, channels);
-    //streamer.startStream();
+    streamer.startStream();
 
     //std::cerr << "thread ID (main): " << QThread::currentThreadId();
 

@@ -5,7 +5,7 @@
 
 class AudioStreamerMoc : public AudioStreamer {
 public:
-    void updateProcessingBuffer() { slotUpdateProcessingBuffer(); }
+    void updateProcessingBuffer() { slotUpdateBuffers(); }
 };
 
 TEST_CASE( "AudioStreamer", "[RtAudio]" ) {

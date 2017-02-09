@@ -1,5 +1,4 @@
 #include <math.h>
-#include <QMutex>
 #include "audiobuffer.h"
 #include "audiocallback.h"
 
@@ -19,30 +18,34 @@
  * in advance. So only the at least needed channels are streamed!
  */
 int AudioCallback::interleaved( void *outputBuffer, void *inputBuffer, unsigned int hwFrameCount,
-                                double streamTime, RtAudioStreamStatus status, void *streamBuffers )
+                                double streamTime, RtAudioStreamStatus status, void *audioStreamer )
 {
     Q_UNUSED(outputBuffer)
-    Q_UNUSED(streamTime)
 
-    if( status ) std::cout << "Stream over/underflow detected." << std::endl;
-    if( hwFrameCount == 0 ) std::cout << "Zero frames detected." << std::endl;
+    if( status ) std::cerr << "Stream over/underflow detected." << std::endl;
+    if( hwFrameCount == 0 ) std::cerr << "Zero frames detected." << std::endl;
 
     signed short *samples = (signed short*)inputBuffer;
-    AudioBuffer *audioBuffers = (AudioBuffer*)streamBuffers;
+    AudioStreamer *streamer = (AudioStreamer*)audioStreamer;
+    AudioBuffer *audioBuffers = streamer->getAudioBuffers();
     unsigned int numberOfChannels = audioBuffers->numberOfChannels();
 
     if( numberOfChannels == 0 ) {
-        std::cout << "Zero channels detected." << std::endl;
+        std::cerr << "Zero channels detected." << std::endl;
         return 0;
     }
 
+    /*for(int i=0; i<10; i++)
+        std::cout << samples[i] << ", ";
+    std::cout << std::endl;
+*/
     if( !audioBuffers->rawAudioBuffer->try_enqueue_bulk(samples, hwFrameCount*numberOfChannels) ) {
-        std::cout << "try_enqueue_bulk fails: " << audioBuffers->rawAudioBuffer->size_approx() << std::endl;
-        // Wake ringbuffer filling thread!
-
+        std::cerr << "buffer overrun detected! @Streamtime: " << streamTime << std::endl;
     }
+
     audioBuffers->frameCounter += hwFrameCount;
-    //std::cout << audioBuffers->rawAudioBuffer->size_approx() << std::endl;
+    audioBuffers->timeStamp = streamTime;
+    streamer->callbackFinished();
 
     return 0;
 }
