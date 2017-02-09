@@ -15,10 +15,9 @@ public:
 
 public slots:
     void slotUpdateRingBuffers(AudioBuffer *buffers);
-    void slotAudioProcessing(AudioBuffer* buffers);
+    void slotAudioProcessing();
 
-//private:
-public:
+private:
     AudioBuffer audioBuffers;
     bool updateRingBuffers(QVector<signed int> *rawData, unsigned int numOfChannels);
 };

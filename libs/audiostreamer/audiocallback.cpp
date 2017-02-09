@@ -35,12 +35,8 @@ int AudioCallback::interleaved( void *outputBuffer, void *inputBuffer, unsigned 
         return 0;
     }
 
-    /*for(int i=0; i<10; i++)
-        std::cout << samples[i] << ", ";
-    std::cout << std::endl;
-*/
     if( !audioBuffers->rawAudioBuffer->try_enqueue_bulk(samples, hwFrameCount*numberOfChannels) ) {
-        std::cerr << "buffer overrun detected! @Streamtime: " << streamTime << std::endl;
+        std::cerr << "Buffer overrun detected! @Streamtime: " << streamTime << std::endl;
     }
 
     audioBuffers->frameCounter += hwFrameCount;

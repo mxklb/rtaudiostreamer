@@ -15,6 +15,7 @@ AudioProcessing::AudioProcessing(QObject *parent) : QObject(parent)
  */
 void AudioProcessing::slotUpdateRingBuffers(AudioBuffer *buffers)
 {
+    // Update internally used processing buffer
     if( audioBuffers.numberOfChannels() != buffers->numberOfChannels() ||
         audioBuffers.ringBufferSize != buffers->ringBufferSize ) {
         audioBuffers.allocateRingbuffers(buffers->ringBufferSize, buffers->activeChannelIds);
@@ -57,18 +58,18 @@ bool AudioProcessing::updateRingBuffers(QVector<signed int> *rawData, unsigned i
 /*
  * Perform audio analysis on the given buffer.
  */
-void AudioProcessing::slotAudioProcessing(AudioBuffer *buffers)
+void AudioProcessing::slotAudioProcessing()
 {
     // todo: Here should be dynamic channel processing pipline ..
 
-    QList<double> amplitudes = absoluteAmplitudes(buffers);
+    QList<double> amplitudes = absoluteAmplitudes(&audioBuffers);
     QList<double> loudness = logLoudness(amplitudes);
 
     // Just print some results to the terminal ..
-    std::cerr << std::setprecision(2) << buffers->timeStamp << " [buffer " << buffers->frameCounter / buffers->ringBufferSize << "]\t";
-    for( unsigned int ch=0; ch<buffers->numberOfChannels(); ch++ ) {
-        unsigned int channel = buffers->activeChannelId(ch);
-        std::cerr << " | Ch" << channel << ": " << std::setiosflags(std::ios::fixed) << std::setprecision(10)
+    std::cerr << std::setprecision(2) << audioBuffers.timeStamp << " [buffer " << audioBuffers.frameCounter / audioBuffers.ringBufferSize << "]\t";
+    for( unsigned int ch=0; ch<audioBuffers.numberOfChannels(); ch++ ) {
+        unsigned int channel = audioBuffers.activeChannelId(ch);
+        std::cerr << " | Ch" << channel << ": " << std::setiosflags(std::ios::fixed) << std::setprecision(7)
                   << amplitudes[ch] << " [" << std::setprecision(1) << loudness[ch] << " dB]";
     }
     std::cerr << "\r";

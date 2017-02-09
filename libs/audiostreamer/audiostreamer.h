@@ -4,7 +4,6 @@
 #include <RtAudio.h>
 #include <QElapsedTimer>
 #include <QObject>
-#include <QTimer>
 
 #include "audiobuffer.h"
 #include "streamsettings.h"
@@ -40,7 +39,7 @@ protected slots:
     void slotUpdateBuffers();
 
 signals:
-    void triggerAudioProcessing(AudioBuffer* buffer);
+    void triggerAudioProcessing();
     void grabbedAudioUpdated(AudioBuffer* buffer);
     void audioCallbackFinished();
 

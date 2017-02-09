@@ -31,19 +31,10 @@ bool AudioBuffer::allocateRingbuffers(unsigned int size, QList<unsigned int> cha
 
     if( rawAudioBuffer != NULL )
         delete rawAudioBuffer;
-    rawAudioBuffer = new moodycamel::ConcurrentQueue<signed short>(rawBufferSize, 1, 1);
 
-    //std::cout << " Size approx (before enqueue): " << rawAudioBuffer->size_approx() << std::endl;
+    rawAudioBuffer = new moodycamel::ConcurrentQueue<signed short>(rawBufferSize, 1, 1);
     if( !rawAudioBuffer->enqueue_bulk(rawAudioFrames.data(), rawBufferSize) ) {
-        //std::cout << " Size approx (after enqueue): " << rawAudioBuffer->size_approx() << std::endl;
         return false;
-   /*     QVector<signed short> tester(rawBufferSize, 1);
-        if( rawAudioBuffer->try_dequeue_bulk(tester.data(), rawBufferSize) == rawBufferSize) {
-            std::cout << " Size approx (after dequeue): " << rawAudioBuffer->size_approx() << std::endl;
-            foreach (signed short value, tester) {
-                std::cout << value << ", " << std::endl;
-            }
-        } */
     }
 
     return !channels.isEmpty();
@@ -61,14 +52,10 @@ bool AudioBuffer::grabSharedFrames(unsigned int numOfFrames)
     unsigned int size = numOfFrames * numberOfChannels();
     size_t count = rawAudioBuffer->try_dequeue_bulk(rawAudioFrames.data(), size);
 
-    /*if( count != size ) {
+    if( count != size ) {
         std::cout << "Frames missing" << std::endl;
         return false;
-    }*/
-
-    for(int i=0; i<10; i++)
-        std::cout << rawAudioFrames.at(i) << ", ";
-    std::cout << std::endl;
+    }
 
     return true;
 }

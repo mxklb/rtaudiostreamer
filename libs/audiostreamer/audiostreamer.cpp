@@ -1,7 +1,6 @@
 #include "audiostreamer.h"
 #include "audiocallback.h"
 #include <QSettings>
-#include <QDateTime>
 
 using namespace std;
 
@@ -11,7 +10,7 @@ using namespace std;
 AudioStreamer::AudioStreamer(QObject *parent) : QObject(parent)
 {
     QSettings settings;
-    processingInterval = settings.value("audiostreamer/processingInterval", 100).toUInt();
+    processingInterval = settings.value("audiostreamer/processingInterval", 50).toUInt();
 
     try {
         rtAudio = new RtAudio();
@@ -27,11 +26,12 @@ AudioStreamer::AudioStreamer(QObject *parent) : QObject(parent)
     setupDeviceList();
     allocateRingBuffers( getInputChannelIds(activeDeviceId), settings.value("audiostreamer/processingBufferSize", 8192).toUInt() );
 
-    connect(this, SIGNAL(audioCallbackFinished()), this, SLOT(slotUpdateBuffers()));
+	// Use signal from RtAudioCallback to trigger buffer update in this thread.
+    connect(this, SIGNAL(audioCallbackFinished()), SLOT(slotUpdateBuffers()));
 
     // todo audioProcessing should be independant lib connected form outside ..
     connect(this, SIGNAL(grabbedAudioUpdated(AudioBuffer*)), &audioProcessing, SLOT(slotUpdateRingBuffers(AudioBuffer*)));
-    connect(this, SIGNAL(triggerAudioProcessing(AudioBuffer*)), &audioProcessing, SLOT(slotAudioProcessing(AudioBuffer*)));
+    connect(this, SIGNAL(triggerAudioProcessing()), &audioProcessing, SLOT(slotAudioProcessing()));
 }
 
 /*
@@ -224,20 +224,15 @@ void AudioStreamer::slotUpdateBuffers()
     {
         if( audioBuffer.grabSharedFrames(streamSettings.hwBufferSize) )
         {
-           /* for(int i=0; i<10; i++)
-                cout << audioBuffer.rawAudioFrames.at(i) << ", ";
-            cout << endl;*/
-
-            audioProcessing.slotUpdateRingBuffers(&audioBuffer);
-
-            //emit grabbedAudioUpdated(&audioBuffer);
+            emit grabbedAudioUpdated(&audioBuffer);
 
             // Poll processing within processingInterval
             // Hmm .. this is not tight/equidistant. Just triggered
-          /*  if( processingInterval < (unsigned int)((processingIntervalTimer.nsecsElapsed()/1000.)+0.5) ) {
-                emit triggerAudioProcessing(&audioBuffer);
+            unsigned int msElappsed = (unsigned int)((processingIntervalTimer.nsecsElapsed()/1000000.)+0.5);
+            if( msElappsed > processingInterval ) {
                 processingIntervalTimer.restart();
-            }*/
+                emit triggerAudioProcessing();
+            }
         }
     }
 }
