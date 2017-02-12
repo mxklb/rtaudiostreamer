@@ -7,10 +7,10 @@
 
 TEST_CASE( "AudioProcessing", "[Algorithms]" ) {
     AudioBuffer* buffer = new AudioBuffer();
-    QList<unsigned int> channels;
+    QVector<unsigned int> channels;
     channels.push_back(0);
     channels.push_back(1);
-    buffer->allocateRingbuffers(100, channels, -32768/2);
+    buffer->allocate(10, channels, 256, -32768/2);
 
     QList<double> amplitudes = AudioProcessing::absoluteAmplitudes(buffer);
     QList<double> loudness = AudioProcessing::logLoudness(amplitudes);
@@ -26,7 +26,7 @@ TEST_CASE( "AudioProcessing", "[Algorithms]" ) {
            REQUIRE((float)loud == (float)-3.0102999566);
         }
 
-        // Test 0.0 & 1.0 amplitude
+        // Test 0.0, 1.0 & 0.25 amplitude
         amplitudes[0] = 0.0;
         amplitudes[1] = 1.0;
         amplitudes.push_back(0.25);
@@ -38,7 +38,8 @@ TEST_CASE( "AudioProcessing", "[Algorithms]" ) {
 
     SECTION("Full processing pipeline") {
         AudioProcessing* processing = new AudioProcessing(NULL);
-        processing->processAudio(buffer);
+        //processing->slotUpdateRingBuffers(buffer);
+        processing->slotAudioProcessing();
         delete processing;
     }
 

@@ -5,17 +5,7 @@
 /*
  * Callback triggered from running RtAudio stream.
  *
- * Copies all activated channels (frames) into AudioBuffer class pointer.
- *
- * Note: This will only succeed if RtAudio channels are stored interleaved!
- *
- * Which channel ids in the inputBuffer are copied are defined in streamBuffers
- * deviceChannelIds list. Per default the RtAudio stream must be opened with
- *
- * parameters.nChannels = highestChannelId - lowestChannelId + 1;
- * parameters.firstChannel = lowestChannelId;
- *
- * in advance. So only the at least needed channels are streamed!
+ * Copies the inputBuffer into audioStreamer's raw AudioBuffer storrage (audioBuffer->rawAudioBuffer).
  */
 int AudioCallback::interleaved( void *outputBuffer, void *inputBuffer, unsigned int hwFrameCount,
                                 double streamTime, RtAudioStreamStatus status, void *audioStreamer )
@@ -27,20 +17,20 @@ int AudioCallback::interleaved( void *outputBuffer, void *inputBuffer, unsigned 
 
     signed short *samples = (signed short*)inputBuffer;
     AudioStreamer *streamer = (AudioStreamer*)audioStreamer;
-    AudioBuffer *audioBuffers = streamer->getAudioBuffers();
-    unsigned int numberOfChannels = audioBuffers->numberOfChannels();
+    AudioBuffer *audioBuffer = streamer->getAudioBuffer();
+    unsigned int rawChannels = audioBuffer->numberOfChannels(true);
 
-    if( numberOfChannels == 0 ) {
+    if( rawChannels == 0 ) {
         std::cerr << "Zero channels detected." << std::endl;
-        return 0;
+        return 1;
     }
 
-    if( !audioBuffers->rawAudioBuffer->try_enqueue_bulk(samples, hwFrameCount*numberOfChannels) ) {
+    if( !audioBuffer->rawBuffer.pushRawDataToQueue(samples, rawChannels*hwFrameCount) ) {
         std::cerr << "Buffer overrun detected! @Streamtime: " << streamTime << std::endl;
     }
 
-    audioBuffers->frameCounter += hwFrameCount;
-    audioBuffers->timeStamp = streamTime;
+    audioBuffer->frameCounter += hwFrameCount;
+    audioBuffer->streamTimeStamp = streamTime;
     streamer->callbackFinished();
 
     return 0;

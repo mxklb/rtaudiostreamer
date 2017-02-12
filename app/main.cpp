@@ -1,6 +1,5 @@
 #include <QCoreApplication>
 #include "audiostreamer.h"
-#include <QThread>
 
 int main(int argc, char *argv[])
 {
@@ -13,12 +12,10 @@ int main(int argc, char *argv[])
     streamer.printListOfDevices();
 
     unsigned int deviceId = 0;
-    QList<unsigned int> channels({0,1});
+    QVector<unsigned int> channels({0,1});
 
     streamer.setActiveDevice(deviceId, channels);
     streamer.startStream();
-
-    //std::cerr << "thread ID (main): " << QThread::currentThreadId();
 
     return a.exec();
 }

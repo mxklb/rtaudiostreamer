@@ -23,7 +23,7 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" ) {
             // Test setActiveChannels (all channels 0..N-1 and reverse N-1..0)
             QList<bool> channelSort({false, true});
             foreach (bool reverse, channelSort) {
-                QList<unsigned int> channels;
+                QVector<unsigned int> channels;
                 for( unsigned int ch=0; ch<numOfInputChannels; ch++ ) {
                     if( !reverse ) channels.push_back(ch);
                     else channels.push_front(ch);
@@ -53,7 +53,7 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" ) {
             }
 
             // Test zero channels
-            QList<unsigned int> channels;
+            QVector<unsigned int> channels;
             streamer->setActiveChannels(channels);
             REQUIRE_FALSE( streamer->startStream() );
         } else WARN("Testing disabled: RtAudio no audio device found!");

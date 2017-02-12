@@ -2,52 +2,86 @@
 #include "catch.hpp"
 #include "audiobuffer.h"
 
-TEST_CASE( "RingBuffer", "[AudioBuffer]" )
+TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
 {
     AudioBuffer* buffer = new AudioBuffer();
 
     SECTION("Allocation") {
-        CHECK_NOFAIL(buffer->allocateRingbuffers(1024));
+        CHECK_NOFAIL(buffer->allocate(1024));
         REQUIRE(buffer->numberOfChannels() == 0);
-        REQUIRE(buffer->ringBufferContainer.size() == 0);
-        REQUIRE(buffer->ringBufferSize == 1024);
+        REQUIRE(buffer->numberOfChannels(true) == 0);
+        REQUIRE(buffer->ringBuffer.bufferContainer.size() == 0);
+        REQUIRE(buffer->ringBufferSize() == 1024);
     }
 
-    SECTION("Channels") {
-        QList<unsigned int> channels({1,5});
-        REQUIRE(buffer->allocateRingbuffers(1024, channels));
+    SECTION("Ring Buffer -> Channels") {
+        QVector<unsigned int> channels({1,5});
+        REQUIRE(buffer->allocate(1024, channels));
+        // Test ringbuffer channel setup
+        RingBuffer *ringBuffer = &buffer->ringBuffer;
         REQUIRE(buffer->numberOfChannels() == channels.size());
-        REQUIRE(buffer->ringBufferContainer.size() == channels.size());
-        REQUIRE(buffer->activeChannelId(1) == channels.at(1));
-        REQUIRE(buffer->activeChannelId(2) == 2);
+        REQUIRE(ringBuffer->bufferContainer.size() == channels.size());
+        REQUIRE(ringBuffer->channelIds.at(0) == channels.at(0));
+        REQUIRE(ringBuffer->channelIds.at(1) == 5);
     }
 
-    SECTION("Rotation") {
-        QList<unsigned int> channels({0});
-        buffer->allocateRingbuffers(10, channels);
+    SECTION("Ring Buffer -> Rotation") {
+        QVector<unsigned int> channels({0});
+        buffer->allocate(10, channels);
 
         // Initialize buffer with values
         for( unsigned int ch=0; ch<buffer->numberOfChannels(); ch++ ) {
-            QVector<double> *frames = &buffer->ringBufferContainer[ch];
-            for( unsigned int i=0; i<buffer->ringBufferSize; i++ ) {
+            QVector<double> *frames = &buffer->ringBuffer.bufferContainer[ch];
+            for( unsigned int i=0; i<buffer->ringBufferSize(); i++ ) {
                 (*frames)[i] = i;
             }
         }
 
         // Test buffer initialization
-        foreach (QVector<double> frames, buffer->ringBufferContainer) {
+        foreach (QVector<double> frames, buffer->ringBuffer.bufferContainer) {
             //for( int i=0; i<frames.size(); i++ ) { std::cerr << frames.at(i) << ", "; }
             REQUIRE(frames.at(3) == 3);
         }
 
         // Rotate and test frames
         unsigned int delta = 5;
-        REQUIRE(buffer->rotateRingbuffers(delta) == true );
-        foreach (QVector<double> frames, buffer->ringBufferContainer) {
+        REQUIRE(buffer->ringBuffer.rotateRingbuffers(delta) == true );
+        foreach (QVector<double> frames, buffer->ringBuffer.bufferContainer) {
             //for( int i=0; i<frames.size(); i++ ) { std::cerr << frames.at(i) << ", "; }
             REQUIRE(frames.at(delta) == 0);
         }
-        REQUIRE(buffer->rotateRingbuffers(buffer->ringBufferSize+1) == false);
+        REQUIRE(buffer->ringBuffer.rotateRingbuffers(buffer->ringBufferSize()+1) == false);
+    }
+
+
+    SECTION("Raw Buffer -> Channels") {
+        unsigned int hwBufferSize = 128;
+        QVector<unsigned int> channels({1,3,5});
+        REQUIRE(buffer->allocate(1024, channels, hwBufferSize));
+
+        // Test raw buffer channel setup
+        RawBuffer *rawBuffer = &buffer->rawBuffer;
+        unsigned int numOfRawChannels = buffer->numberOfChannels(true);
+        REQUIRE(buffer->rawBufferSize() == hwBufferSize);
+        REQUIRE(numOfRawChannels == channels.last() - channels.first() + 1);
+        REQUIRE(rawBuffer->rawFrames.size() == numOfRawChannels * buffer->rawBufferSize());
+
+        // Test raw buffer push pop operations
+        unsigned int numOfFrames = hwBufferSize*numOfRawChannels;
+        QVector<signed short> frames = QVector<signed short>(numOfFrames, -10);
+        for( unsigned int ch=0; ch<numOfRawChannels; ch++ ) {
+            for( unsigned int i=0; i<hwBufferSize; i++ ) {
+                frames[i*ch + ch] = i;
+            }
+        }
+
+        REQUIRE(rawBuffer->pushRawDataToQueue(frames.data(), numOfFrames));
+        REQUIRE(rawBuffer->popRawDataFromQueue());
+
+        // Check first two
+        for( unsigned int i=0; i<numOfRawChannels*2; i++ ) {
+            REQUIRE(rawBuffer->rawFrames[i] == frames[i] );
+        }
     }
 
     delete buffer;

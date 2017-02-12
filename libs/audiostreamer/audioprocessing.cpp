@@ -1,58 +1,26 @@
 #include <iostream>
 #include <iomanip>
-#include <math.h>
 
 #include "audioprocessing.h"
 
 using namespace std;
 
-AudioProcessing::AudioProcessing(QObject *parent) : QObject(parent)
-{
-}
+AudioProcessing::AudioProcessing(QObject *parent) : QObject(parent) { }
 
 /*
  * Updates the internally used audioBuffers: Using data from the given buffer.
  */
-void AudioProcessing::slotUpdateRingBuffers(AudioBuffer *buffers)
+void AudioProcessing::slotUpdateRingBuffer(AudioBuffer *buffer)
 {
-    // Update internally used processing buffer
-    if( audioBuffers.numberOfChannels() != buffers->numberOfChannels() ||
-        audioBuffers.ringBufferSize != buffers->ringBufferSize ) {
-        audioBuffers.allocateRingbuffers(buffers->ringBufferSize, buffers->activeChannelIds);
+    if( audioBuffer.ringBufferSize() != buffer->ringBufferSize()  ||
+        audioBuffer.numberOfChannels() != buffer->numberOfChannels() )
+    {
+        audioBuffer.allocate(buffer->ringBufferSize(), buffer->ringBuffer.channelIds, buffer->rawBufferSize());
     }
 
-    unsigned int numOfFrames = buffers->rawAudioFrames.size() / buffers->numberOfChannels();
-    updateRingBuffers(&buffers->rawAudioFrames, numOfFrames);
-    audioBuffers.frameCounter = buffers->frameCounter;
-    audioBuffers.timeStamp = buffers->timeStamp;
-}
-
-/*
- * Updates the audioBuffers member by shifting and inserting interleaved numOfFrames from given rawData.
- * Note: audioBuffers.rawAudioFrames and audioBuffers.rawAudioBuffer gets not touched/copied!
- */
-bool AudioProcessing::updateRingBuffers(QVector<signed int> *rawData, unsigned int numOfFrames)
-{
-    unsigned int lowestChannelId = audioBuffers.activeChannelId(0);
-    unsigned int numOfChannels = audioBuffers.numberOfChannels();
-
-    if( (unsigned int)rawData->size() < numOfChannels*numOfFrames ) {
-        cerr << "Wrong rawData size detected!" << endl;
-        return false;
-    }
-
-    if( !audioBuffers.rotateRingbuffers(numOfFrames) ) {
-        numOfFrames = audioBuffers.ringBufferSize;
-    }
-
-    for( unsigned int ch=0; ch<numOfChannels; ch++ ) {
-        unsigned int channelId = audioBuffers.activeChannelId(ch) - lowestChannelId;
-        QVector<double> *buffer = &audioBuffers.ringBufferContainer[ch];
-        for( unsigned int i=0; i<numOfFrames; i++ ) {
-            (*buffer)[i] = (double)rawData->at(i * numOfChannels + channelId);
-        }
-    }
-    return true;
+    audioBuffer.frameCounter = buffer->frameCounter;
+    audioBuffer.streamTimeStamp = buffer->streamTimeStamp;
+    audioBuffer.ringBuffer.insert(&buffer->rawBuffer.rawFrames, buffer->rawBufferSize(), buffer->numberOfChannels(true));
 }
 
 /*
@@ -62,17 +30,18 @@ void AudioProcessing::slotAudioProcessing()
 {
     // todo: Here should be dynamic channel processing pipline ..
 
-    QList<double> amplitudes = absoluteAmplitudes(&audioBuffers);
+    QList<double> amplitudes = absoluteAmplitudes(&audioBuffer);
     QList<double> loudness = logLoudness(amplitudes);
 
     // Just print some results to the terminal ..
-    std::cerr << std::setprecision(2) << audioBuffers.timeStamp << " [buffer " << audioBuffers.frameCounter / audioBuffers.ringBufferSize << "]\t";
-    for( unsigned int ch=0; ch<audioBuffers.numberOfChannels(); ch++ ) {
-        unsigned int channel = audioBuffers.activeChannelId(ch);
-        std::cerr << " | Ch" << channel << ": " << std::setiosflags(std::ios::fixed) << std::setprecision(7)
-                  << amplitudes[ch] << " [" << std::setprecision(1) << loudness[ch] << " dB]";
+    cerr << setprecision(2) << audioBuffer.streamTimeStamp << " [frame "
+         << audioBuffer.frameCounter << " / buffer " << audioBuffer.frameCounter / audioBuffer.ringBufferSize() << "]\t";
+    for( unsigned int ch=0; ch<audioBuffer.numberOfChannels(); ch++ ) {
+        unsigned int channel = audioBuffer.ringBuffer.channelIds.at(ch);
+        cerr << " | Ch" << channel << ": " << setiosflags(ios::fixed) << setprecision(7)
+                  << amplitudes[ch] << " [" << setprecision(1) << loudness[ch] << " dB]";
     }
-    std::cerr << "\r";
+    cerr << "\r";
 }
 
 /*
@@ -88,15 +57,16 @@ QList<double> AudioProcessing::absoluteAmplitudes(AudioBuffer *buffer)
         amplitudes.push_back(0.0);
     }
 
+    RingBuffer *ringBuffer = &buffer->ringBuffer;
     for( int ch=0; ch<numOfChannels; ch++ ) {
-        for( unsigned int i=0; i<buffer->ringBufferSize; i++ ) {
-            double amplitude = buffer->ringBufferContainer.at(ch)[i];
+        for( unsigned int i=0; i<ringBuffer->ringBufferSize; i++ ) {
+            double amplitude = ringBuffer->bufferContainer.at(ch)[i];
             amplitudes[ch] += fabs(amplitude / 32768.); // todo: get factor from used rtaudio data type
         }
     }
 
     for( int ch=0; ch<numOfChannels; ch++ ) {
-        amplitudes[ch] /= (double)buffer->ringBufferSize;
+        amplitudes[ch] /= (double)ringBuffer->ringBufferSize;
     }
 
     return amplitudes;

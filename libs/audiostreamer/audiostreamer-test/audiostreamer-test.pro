@@ -4,6 +4,9 @@ SOURCES += \
     audiocallback-test.cpp \
     audioprocessing-test.cpp
 
+# Set concurrentqueue header include path
+INCLUDEPATH += $$PROJECT_DIR/libs/concurrentqueue
+
 include($$PROJECT_DIR/libs/test.pri)
 
 # Relative path to libs

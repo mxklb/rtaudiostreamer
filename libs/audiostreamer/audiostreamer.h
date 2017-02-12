@@ -23,16 +23,16 @@ public:
     QList<RtAudio::DeviceInfo> getListOfDevices();
 
     unsigned int numberOfInputChannels(int deviceId = -1);
-    QList<unsigned int> getInputChannelIds(int deviceId = -1);
+    QVector<unsigned int> getInputChannelIds(int deviceId = -1);
 
-    void setActiveDevice(unsigned int deviceId, QList<unsigned int> channelIds = QList<unsigned int>());
-    void setActiveChannels(QList<unsigned int> channelIds);
+    void setActiveDevice(unsigned int deviceId, QVector<unsigned int> channelIds = QVector<unsigned int>());
+    void setActiveChannels(QVector<unsigned int> channelIds);
 
     bool startStream(StreamSettings settings = StreamSettings());
     bool stopStream();
 
 protected:
-    AudioBuffer* getAudioBuffers() { return &audioBuffer; }
+    AudioBuffer* getAudioBuffer() { return &audioBuffer; }
     void callbackFinished() { emit audioCallbackFinished(); }
 
 protected slots:
@@ -40,7 +40,7 @@ protected slots:
 
 signals:
     void triggerAudioProcessing();
-    void grabbedAudioUpdated(AudioBuffer* buffer);
+    void rawBufferChanged(AudioBuffer* buffer);
     void audioCallbackFinished();
 
 private:
@@ -55,7 +55,7 @@ private:
     unsigned int processingInterval;
 
     void setupDeviceList();
-    void allocateRingBuffers(QList<unsigned int> channels, unsigned int size = 8192);
+    void allocateRingBuffers(QVector<unsigned int> channels, unsigned int size = 8192, unsigned int hwBufferSize = 256);
 };
 
 #endif // AUDIOSTREAMER_H

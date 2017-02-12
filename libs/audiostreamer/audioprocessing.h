@@ -14,12 +14,12 @@ public:
     static QList<double> logLoudness(QList<double> amplitudes);
 
 public slots:
-    void slotUpdateRingBuffers(AudioBuffer *buffers);
+    void slotUpdateRingBuffer(AudioBuffer *buffer);
     void slotAudioProcessing();
 
 private:
-    AudioBuffer audioBuffers;
-    bool updateRingBuffers(QVector<signed int> *rawData, unsigned int numOfChannels);
+    AudioBuffer audioBuffer;
+    bool updateRingBuffers(QVector<signed short> *rawData, unsigned int numOfChannels);
 };
 
 #endif // AUDIOPROCESSING_H

@@ -1,34 +1,25 @@
 #ifndef AUDIOBUFFER_H
 #define AUDIOBUFFER_H
 
-#include <QVector>
-#include <QList>
+#include "rawbuffer.h"
+#include "ringbuffer.h"
 
-#include "concurrentqueue.h"
-
-/*
- * This class handles ring buffers for multi channel audio buffering.
- */
-class AudioBuffer
-{
- public:
+class AudioBuffer {
+public:
     AudioBuffer();
 
-    double timeStamp;
+    double streamTimeStamp;
     unsigned long frameCounter;
-    unsigned int ringBufferSize;
-    QList<unsigned int> activeChannelIds;
-    QList<QVector<double> > ringBufferContainer;
 
-    moodycamel::ConcurrentQueue<signed short>* rawAudioBuffer;
-    QVector<signed int> rawAudioFrames;
+    RawBuffer rawBuffer;
+    RingBuffer ringBuffer;
 
-    bool allocateRingbuffers(unsigned int size, QList<unsigned int> channels = QList<unsigned int>(), double value = 0.0);
-    bool rotateRingbuffers(unsigned int delta);
-    unsigned int activeChannelId(unsigned int ch);
-    unsigned int numberOfChannels();
+    bool allocate(unsigned int ringBufferSize, QVector<unsigned int> channels = QVector<unsigned int>(),
+                  unsigned int hwBufferSize = 256, double value = 0.0);
 
-    bool grabSharedFrames(unsigned int numOfFrames);
+    unsigned int numberOfChannels(bool raw = false);
+    unsigned int ringBufferSize() { return ringBuffer.ringBufferSize; }
+    unsigned int rawBufferSize() { return rawBuffer.rawBufferSize; }
 };
 
 #endif // AUDIOBUFFER_H
