@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "ringbuffer.h"
 
 /*
@@ -5,6 +6,17 @@
  */
 RingBuffer::RingBuffer() {
     allocate(1024);
+}
+
+/*
+ * Sorts and removes dublicate entries in the given vector and returns it cleaned.
+ */
+QVector<unsigned int> RingBuffer::cleanChannels(QVector<unsigned int> channels)
+{
+    std::sort(channels.begin(), channels.end());
+    auto last = std::unique(channels.begin(), channels.end());
+    channels.erase(last, channels.end());
+    return channels;
 }
 
 /*
@@ -16,8 +28,7 @@ bool RingBuffer::allocate(unsigned int size, QVector<unsigned int> channels, dou
     ringBufferSize = size;
     channelIds = channels;
     if( channelIds.size() > 0 ) {
-        std::sort(channels.begin(), channels.end());
-        channelIds = channels;
+        channelIds = cleanChannels(channels);
         for( int ch=0; ch<channelIds.size(); ch++ ) {
             QVector<double> buffer(ringBufferSize, value);
             bufferContainer.push_back(buffer);

@@ -1,7 +1,6 @@
 #ifndef RINGBUFFER_H
 #define RINGBUFFER_H
 
-#include <algorithm>
 #include <QVector>
 
 class RingBuffer {
@@ -14,7 +13,9 @@ public:
 
     bool allocate(unsigned int size, QVector<unsigned int> channels = QVector<unsigned int>(), double value = 0.0);
     bool insert(QVector<signed short> *rawData, unsigned int numOfFrames, unsigned int rawChannelCount);
+
     bool rotateRingbuffers(unsigned int delta);
+    static QVector<unsigned int> cleanChannels(QVector<unsigned int> channels);
 };
 
 

@@ -8,10 +8,12 @@ public:
     void updateProcessingBuffer() { slotUpdateBuffers(); }
 };
 
-TEST_CASE( "AudioStreamer", "[RtAudio]" ) {
+TEST_CASE( "AudioStreamer", "[RtAudio]" )
+{
     AudioStreamer* streamer = new AudioStreamer();
 
-    SECTION("Initialization") {
+    SECTION("Initialization")
+    {
         streamer->printListOfDevices();
         if( !streamer->getListOfDevices().isEmpty() ) {
             // Test numberOfInputChannels
@@ -39,7 +41,8 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" ) {
         } else WARN("Testing disabled: RtAudio no audio device found!");
     }
 
-    SECTION("Streaming") {
+    SECTION("Streaming")
+    {
         if( !streamer->getListOfDevices().isEmpty() ) {
             // Start streaming
             if( streamer->startStream() ) {

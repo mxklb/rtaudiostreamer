@@ -20,6 +20,8 @@ public:
     unsigned int numberOfChannels(bool raw = false);
     unsigned int ringBufferSize() { return ringBuffer.ringBufferSize; }
     unsigned int rawBufferSize() { return rawBuffer.rawBufferSize; }
+
+    bool isFilled();
 };
 
 #endif // AUDIOBUFFER_H

@@ -12,7 +12,8 @@ AudioProcessing::AudioProcessing(QObject *parent) : QObject(parent) { }
  */
 void AudioProcessing::slotUpdateRingBuffer(AudioBuffer *buffer)
 {
-    if( audioBuffer.ringBufferSize() != buffer->ringBufferSize()  ||
+    if( audioBuffer.rawBufferSize() != buffer->rawBufferSize() ||
+        audioBuffer.ringBufferSize() != buffer->ringBufferSize() ||
         audioBuffer.numberOfChannels() != buffer->numberOfChannels() )
     {
         audioBuffer.allocate(buffer->ringBufferSize(), buffer->ringBuffer.channelIds, buffer->rawBufferSize());
@@ -31,7 +32,7 @@ void AudioProcessing::slotAudioProcessing()
     // todo: Here should be dynamic channel processing pipline ..
 
     QList<double> amplitudes = absoluteAmplitudes(&audioBuffer);
-    QList<double> loudness = logLoudness(amplitudes);
+    QList<double> loudness = logAmplitudes(amplitudes);
 
     // Just print some results to the terminal ..
     cerr << setprecision(2) << audioBuffer.streamTimeStamp << " [frame "
@@ -73,15 +74,15 @@ QList<double> AudioProcessing::absoluteAmplitudes(AudioBuffer *buffer)
 }
 
 /*
- * Converts absolute real amplitudes (range A=0..1) to relative/log loudness [dB]: 10*log10(A)
+ * Converts absolute real amplitudes (range A=0..1) to relative/log loudness [dB]: factor*log10(A)
  */
-QList<double> AudioProcessing::logLoudness(QList<double> amplitudes)
+QList<double> AudioProcessing::logAmplitudes(QList<double> amplitudes, double factor)
 {
     QList<double> loudness;
     foreach (double amplitude, amplitudes) {
         if( amplitude < 7.15256e-07 )
             amplitude = 7.15256e-07; // gateing ?
-        loudness.push_back(10*log10(amplitude));
+        loudness.push_back(factor*log10(amplitude));
     }
     return loudness;
 }

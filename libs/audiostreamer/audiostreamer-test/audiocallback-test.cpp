@@ -32,7 +32,8 @@ void initHwBuffer(signed short* buffer, unsigned int hwBufferSize, unsigned int 
 /*
  * Prints first range values of each channel to the console
  */
-void printBuffer(QList<QVector<double> > bufferContainer, int range = 10) {
+void printBuffer(QList<QVector<double> > bufferContainer, int range = 10)
+{
     int ch = 0;
     foreach (QVector<double> buffer, bufferContainer) {
         std::cerr << "ch" << ch++;
@@ -44,25 +45,28 @@ void printBuffer(QList<QVector<double> > bufferContainer, int range = 10) {
 }
 
 
-TEST_CASE( "AudioCallback", "[RtAudio]" ) {
+TEST_CASE( "AudioCallback", "[RtAudio]" )
+{
     testAudioStreamer streamer;
-    if( !streamer.getListOfDevices().isEmpty() ) {
-        unsigned int ringBufferSize = 1024;
-        unsigned int hwBufferSize = 256;
-        unsigned int numOfRawChannels = 0;
-        QVector<unsigned int> channelIds = streamer.getInputChannelIds();
-        unsigned int numOfChannels = channelIds.size();
-        AudioBuffer *buffer = streamer.getStreamerBuffer();
+
+    if( !streamer.getListOfDevices().isEmpty() )
+    {
         signed short* hwBuffer = NULL;
+        QVector<unsigned int> channelIds = streamer.getInputChannelIds();
 
         if( channelIds.size() > 0 )
         {
-            numOfRawChannels = channelIds.last() - channelIds.first() + 1;
+            AudioBuffer *buffer = streamer.getStreamerBuffer();
+            unsigned int numOfRawChannels = channelIds.last() - channelIds.first() + 1;
+            unsigned int numOfChannels = channelIds.size();
+
+            unsigned int hwBufferSize = 256;
+            unsigned int ringBufferSize = 1024;
 
             hwBuffer = new signed short[hwBufferSize*numOfRawChannels];
             initHwBuffer(hwBuffer, hwBufferSize, numOfRawChannels);
 
-            SECTION("With buffer size > hw buffer") {
+            SECTION("Ringbuffer size > raw buffer size") {
                 REQUIRE(buffer->allocate(ringBufferSize, channelIds, hwBufferSize));
 
                 REQUIRE(buffer->frameCounter == 0);
@@ -70,7 +74,7 @@ TEST_CASE( "AudioCallback", "[RtAudio]" ) {
                 REQUIRE(buffer->frameCounter == hwBufferSize);
 
                 // Dequeue raw frames and populate ringbuffers
-                REQUIRE(buffer->rawBuffer.popRawDataFromQueue());
+                REQUIRE(buffer->rawBuffer.grabFramesFromQueue());
                 REQUIRE(buffer->ringBuffer.insert(&buffer->rawBuffer.rawFrames, hwBufferSize, numOfRawChannels));
 
                 // Check if buffer is correctly filled
@@ -79,7 +83,7 @@ TEST_CASE( "AudioCallback", "[RtAudio]" ) {
                 }
             }
 
-            SECTION("With buffer size < hw buffer") {
+            SECTION("Ringbuffer size < raw buffer size") {
                 ringBufferSize = 128;
                 REQUIRE(buffer->allocate(ringBufferSize, channelIds, hwBufferSize));
 
@@ -88,7 +92,7 @@ TEST_CASE( "AudioCallback", "[RtAudio]" ) {
                 REQUIRE(buffer->frameCounter == hwBufferSize);
 
                 // Dequeue raw frames and populate ringbuffers
-                REQUIRE(buffer->rawBuffer.popRawDataFromQueue());
+                REQUIRE(buffer->rawBuffer.grabFramesFromQueue());
                 REQUIRE(buffer->ringBuffer.insert(&buffer->rawBuffer.rawFrames, ringBufferSize, numOfRawChannels));
 
                 // Check if buffer is correctly filled
@@ -106,6 +110,6 @@ TEST_CASE( "AudioCallback", "[RtAudio]" ) {
                 REQUIRE(buffer->frameCounter == 0);
             }
         }
-        delete[] hwBuffer;
+        if( hwBuffer ) { delete[] hwBuffer; }
     } else WARN("Tests disabled: RtAudio no audio device found!");
 }

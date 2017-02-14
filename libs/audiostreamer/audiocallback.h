@@ -7,9 +7,9 @@
 class AudioCallback
 {
 public:
-    static int interleaved( void *outputBuffer, void *inputBuffer,
+    static int interleaved(void *outputBuffer, void *inputBuffer,
                             unsigned int hwFrameCount, double streamTime,
-                            RtAudioStreamStatus status, void *audioStreamer );
+                            RtAudioStreamStatus status, void *streamer );
 };
 
 #endif // AUDIOCALLBACK_H

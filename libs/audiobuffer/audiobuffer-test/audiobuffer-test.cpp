@@ -53,20 +53,20 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
         REQUIRE(buffer->ringBuffer.rotateRingbuffers(buffer->ringBufferSize()+1) == false);
     }
 
-
     SECTION("Raw Buffer -> Channels") {
         unsigned int hwBufferSize = 128;
         QVector<unsigned int> channels({1,3,5});
         REQUIRE(buffer->allocate(1024, channels, hwBufferSize));
 
         // Test raw buffer channel setup
-        RawBuffer *rawBuffer = &buffer->rawBuffer;
         unsigned int numOfRawChannels = buffer->numberOfChannels(true);
-        REQUIRE(buffer->rawBufferSize() == hwBufferSize);
         REQUIRE(numOfRawChannels == channels.last() - channels.first() + 1);
-        REQUIRE(rawBuffer->rawFrames.size() == numOfRawChannels * buffer->rawBufferSize());
+        REQUIRE(buffer->rawBufferSize() == hwBufferSize);
 
-        // Test raw buffer push pop operations
+        RawBuffer *rawBuffer = &buffer->rawBuffer;
+        REQUIRE(rawBuffer->rawFrames.size() == numOfRawChannels * hwBufferSize);
+
+        // Test raw buffer insert operation
         unsigned int numOfFrames = hwBufferSize*numOfRawChannels;
         QVector<signed short> frames = QVector<signed short>(numOfFrames, -10);
         for( unsigned int ch=0; ch<numOfRawChannels; ch++ ) {
@@ -75,14 +75,12 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
             }
         }
 
-        REQUIRE(rawBuffer->pushRawDataToQueue(frames.data(), numOfFrames));
-        REQUIRE(rawBuffer->popRawDataFromQueue());
+        REQUIRE(rawBuffer->insert(frames.data(), numOfFrames, true));
 
-        // Check first two
+        // Check first two frames from each channel
         for( unsigned int i=0; i<numOfRawChannels*2; i++ ) {
             REQUIRE(rawBuffer->rawFrames[i] == frames[i] );
         }
     }
-
     delete buffer;
 }

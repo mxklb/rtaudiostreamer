@@ -5,7 +5,8 @@
 #include "audiobuffer.h"
 #include "audioprocessing.h"
 
-TEST_CASE( "AudioProcessing", "[Algorithms]" ) {
+TEST_CASE( "AudioProcessing", "[Algorithms]" )
+{
     AudioBuffer* buffer = new AudioBuffer();
     QVector<unsigned int> channels;
     channels.push_back(0);
@@ -13,7 +14,7 @@ TEST_CASE( "AudioProcessing", "[Algorithms]" ) {
     buffer->allocate(10, channels, 256, -32768/2);
 
     QList<double> amplitudes = AudioProcessing::absoluteAmplitudes(buffer);
-    QList<double> loudness = AudioProcessing::logLoudness(amplitudes);
+    QList<double> loudness = AudioProcessing::logAmplitudes(amplitudes);
 
     SECTION("Amplitude calculation") {
         foreach (double amp, amplitudes) {
@@ -30,7 +31,7 @@ TEST_CASE( "AudioProcessing", "[Algorithms]" ) {
         amplitudes[0] = 0.0;
         amplitudes[1] = 1.0;
         amplitudes.push_back(0.25);
-        loudness = AudioProcessing::logLoudness(amplitudes);
+        loudness = AudioProcessing::logAmplitudes(amplitudes);
         REQUIRE((float)loudness[0] == (float)-61.4553849038);
         REQUIRE((float)loudness[1] == (float)0.0);
         REQUIRE((float)loudness[2] == (float)-6.0206);

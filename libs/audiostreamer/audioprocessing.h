@@ -11,7 +11,7 @@ public:
     explicit AudioProcessing(QObject *parent = 0);
 
     static QList<double> absoluteAmplitudes(AudioBuffer *buffer);
-    static QList<double> logLoudness(QList<double> amplitudes);
+    static QList<double> logAmplitudes(QList<double> amplitudes, double factor = 10.);
 
 public slots:
     void slotUpdateRingBuffer(AudioBuffer *buffer);

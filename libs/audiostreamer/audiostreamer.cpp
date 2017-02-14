@@ -28,7 +28,6 @@ AudioStreamer::AudioStreamer(QObject *parent) : QObject(parent)
 
     // Use signal from RtAudioCallback to trigger buffer update in main thread.
     connect(this, SIGNAL(audioCallbackFinished()), SLOT(slotUpdateBuffers()));
-    connect(this, SIGNAL(triggerAudioProcessing()), &audioProcessing, SLOT(slotAudioProcessing()));
 }
 
 /*
@@ -166,8 +165,8 @@ bool AudioStreamer::startStream(StreamSettings settings)
     foreach (unsigned int id, audioBuffer.ringBuffer.channelIds) cout << "Ch" << id << " ";
     cout << endl;
 
-    try { // todo: make audio format a config option
-        rtAudio->openStream(NULL, &parameters, RTAUDIO_SINT16, settings.hwSampleRate, &settings.hwBufferSize, &AudioCallback::interleaved, this);
+    try {
+        rtAudio->openStream(NULL, &parameters, settings.format, settings.hwSampleRate, &settings.hwBufferSize, &AudioCallback::interleaved, this);
         rtAudio->startStream();
         processingIntervalTimer.restart();
     }
@@ -216,20 +215,19 @@ void AudioStreamer::slotUpdateBuffers()
 {
     if( rtAudio->isStreamRunning() && rtAudio->isStreamOpen() )
     {
-        if( audioBuffer.rawBuffer.popRawDataFromQueue() )
+        if( audioBuffer.rawBuffer.grabFramesFromQueue() )
         {
-            //emit rawBufferChanged(&audioBuffer);
             audioProcessing.slotUpdateRingBuffer(&audioBuffer);
 
-            // Poll processing within processingInterval
-            // Hmm .. this is not tight/equidistant. Just triggered
+            // trigger processing within processingInterval
+            // Hmm .. this is not tight/equidistant enough. Just triggered from audio callback -> jitter :(
             unsigned int msElappsed = (unsigned int)((processingIntervalTimer.nsecsElapsed()/1000000.)+0.5);
-            bool ringBufferFull = audioBuffer.frameCounter / audioBuffer.ringBufferSize() > 0;
 
-            if( msElappsed > processingInterval && ringBufferFull ) {
+            if( msElappsed > processingInterval && audioBuffer.isFilled() ) {
                 processingIntervalTimer.restart();
-                emit triggerAudioProcessing();
+                audioProcessing.slotAudioProcessing();
             }
         }
+        else { cerr << "Warning: Detected missing frames .." << endl; }
     }
 }

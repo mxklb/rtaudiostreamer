@@ -1,35 +1,68 @@
 #include "rawbuffer.h"
 #include <iostream>
 
-RawBuffer::RawBuffer() {
-    rawBufferSize = 256;
-    numberOfChannels = 0;
+/*
+ * Constructor
+ */
+RawBuffer::RawBuffer()
+{
     rawBuffer = NULL;
+    rawBufferSize = 0;
+    numberOfChannels = 0;
     rawFrames = QVector<signed short>();
 }
 
 /*
- * Allocates size*numOfChannels length buffer assigned with value
+ * Destructor
  */
-bool RawBuffer::allocate(unsigned int size, unsigned int numOfChannels, signed short value)
+RawBuffer::~RawBuffer() {
+    clear();
+}
+
+/*
+ * Allocates numberOfFrames frames for each numOfChannels, assignes em with given value.
+ */
+bool RawBuffer::allocate(unsigned int numberOfFrames, unsigned int numOfChannels, signed short value)
 {
-    bool success = true;
-    rawBufferSize = size;
+    clear();
+
+    unsigned int bufferSize = numberOfFrames * numOfChannels;
+    if( bufferSize == 0 )
+        return false;
+
+    rawBufferSize = numberOfFrames;
     numberOfChannels = numOfChannels;
-    unsigned int numOfFrames = size*numOfChannels;
+    rawFrames = QVector<signed short>(bufferSize, value);
+    rawBuffer = new moodycamel::ConcurrentQueue<signed short>(bufferSize,1,1);
 
-    rawFrames.clear();
-    if( rawBuffer != NULL )
+    return true;
+}
+
+/*
+ * Frees all pre-allocated memory
+ */
+void RawBuffer::clear()
+{
+    rawBufferSize = 0;
+    numberOfChannels = 0;
+    rawFrames = QVector<signed short>();
+    if( rawBuffer != NULL ) {
         delete rawBuffer;
-
-    if( numOfFrames > 0 ) {
-        rawFrames = QVector<signed short>(numOfFrames, value);
-        rawBuffer = new moodycamel::ConcurrentQueue<signed short>(numOfFrames);
-    }
-    else {
-        rawFrames = QVector<signed short>();
         rawBuffer = NULL;
-        success = false;
+    }
+}
+
+/*
+ * Insert raw frames into concurrent queue.
+ *
+ * If dequeue true directly populates rawFrames buffer.
+ * Otherwise call popRawDataFromQueue afterwards manually.
+ */
+bool RawBuffer::insert(signed short* frames, unsigned int size, bool dequeue)
+{
+    bool success = pushFramesToQueue(frames, size);
+    if( success && dequeue == true ) {
+        success = success && grabFramesFromQueue();
     }
     return success;
 }
@@ -37,30 +70,36 @@ bool RawBuffer::allocate(unsigned int size, unsigned int numOfChannels, signed s
 /*
  * Thread save: Insert/push frames into concurrent queue (size = channelCount*hwBuffer)
  */
-bool RawBuffer::pushRawDataToQueue(signed short* data, unsigned int size)
+bool RawBuffer::pushFramesToQueue(signed short* frames, unsigned int size)
 {
     unsigned int numOfFrames = rawBufferSize*numberOfChannels;
     if( size > numOfFrames ) {
-        std::cerr << "Reducing dada to push from " << size << " to " << numOfFrames << std::endl;
+        std::cerr << "Reducing data to push from " << size << " to " << numOfFrames << std::endl;
         size = numOfFrames;
     }
-    return rawBuffer->try_enqueue_bulk(data, size);
+    return rawBuffer->enqueue_bulk(frames, size);
 }
 
 /*
  * Thread save: Moves/pops frames from concurrent queue to
  */
-bool RawBuffer::popRawDataFromQueue()
+bool RawBuffer::grabFramesFromQueue()
 {
+    int retryCounter = 0;
     size_t framesCopied = 0;
     size_t missingFrames = rawFrames.size();
     while (missingFrames > 0 ) {
         framesCopied += rawBuffer->try_dequeue_bulk(rawFrames.data() + framesCopied*sizeof(signed short), missingFrames);
-        if( framesCopied == 0 ) {
-            std::cerr << "try_dequeue_bulk failed, missing " << framesCopied << "/" << rawFrames.size() << std::endl;
+        missingFrames = rawBuffer->size_approx();
+        if( missingFrames > 0 ) {
+            retryCounter++;
+        }
+        else break;
+
+        if( retryCounter > 10 ) {
+            std::cerr << "try_dequeue_bulk failed, missing " << missingFrames << "/" << rawFrames.size() << std::endl;
             return false;
         }
-        missingFrames = rawFrames.size() - framesCopied;
     }
-    return true;
+    return framesCopied > 0;
 }
