@@ -8,7 +8,7 @@ QT += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 # Set concurrentqueue header include path
-INCLUDEPATH += $$PROJECT_DIR/libs/concurrentqueue
+INCLUDEPATH += $$PROJECT_DIR/libs/extern/concurrentqueue
 
 SOURCES += main.cpp
 

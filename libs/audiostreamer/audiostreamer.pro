@@ -11,7 +11,7 @@ macx {
 }
 
 # Set concurrentqueue header include path
-INCLUDEPATH += $$PROJECT_DIR/libs/concurrentqueue
+INCLUDEPATH += $$PROJECT_DIR/libs/extern/concurrentqueue
 
 
 SOURCES += audiostreamer.cpp \
