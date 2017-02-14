@@ -1,8 +1,7 @@
 TARGET = audiobuffer
 CONFIG += c++11
 
-# Set concurrentqueue header include path
-INCLUDEPATH += $$PROJECT_DIR/libs/extern/concurrentqueue
+include(audiobuffer.pri)
 
 HEADERS += audiobuffer.h \
     rawbuffer.h \

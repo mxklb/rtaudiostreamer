@@ -10,10 +10,6 @@ macx {
     LIBS += -L/usr/local/lib -lrtaudio
 }
 
-# Set concurrentqueue header include path
-INCLUDEPATH += $$PROJECT_DIR/libs/extern/concurrentqueue
-
-
 SOURCES += audiostreamer.cpp \
     audioprocessing.cpp \
     audiocallback.cpp
