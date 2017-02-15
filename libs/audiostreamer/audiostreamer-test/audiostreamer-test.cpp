@@ -11,7 +11,7 @@ public:
 
 TEST_CASE( "AudioStreamer", "[RtAudio]" )
 {
-    AudioStreamer* streamer = new AudioStreamer();
+    AudioStreamerMoc* streamer = new AudioStreamerMoc();
 
     SECTION("Initialization")
     {
@@ -51,11 +51,10 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" )
                 REQUIRE(streamer->stopStream() == true);
             } else {
                 WARN("Streaming failed: RtAudio can't start stream!");
-                AudioStreamerMoc streamerMoc;
-                // Dummy call to slotUpdateProcessingBuffer
-                streamerMoc.updateProcessingBuffer();
-                REQUIRE(streamerMoc.getGrabbingBuffer() != NULL);
             }
+
+            streamer->updateProcessingBuffer();
+            REQUIRE(streamer->getGrabbingBuffer() != NULL);
 
             // Test zero channels
             QVector<unsigned int> channels;
