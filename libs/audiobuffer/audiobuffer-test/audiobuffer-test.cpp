@@ -6,7 +6,8 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
 {
     AudioBuffer* buffer = new AudioBuffer();
 
-    SECTION("Allocation") {
+    SECTION("Allocation")
+    {
         CHECK_NOFAIL(buffer->allocate(1024));
         REQUIRE(buffer->numberOfChannels() == 0);
         REQUIRE(buffer->numberOfChannels(true) == 0);
@@ -14,7 +15,8 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
         REQUIRE(buffer->ringBufferSize() == 1024);
     }
 
-    SECTION("Ring Buffer -> Channels") {
+    SECTION("Ring Buffer -> Channels")
+    {
         QVector<unsigned int> channels({1,5});
         REQUIRE(buffer->allocate(1024, channels));
         // Test ringbuffer channel setup
@@ -25,7 +27,8 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
         REQUIRE(ringBuffer->channelIds.at(1) == 5);
     }
 
-    SECTION("Ring Buffer -> Rotation") {
+    SECTION("Ring Buffer -> Rotation")
+    {
         QVector<unsigned int> channels({0});
         buffer->allocate(10, channels);
 
@@ -39,7 +42,6 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
 
         // Test buffer initialization
         foreach (QVector<double> frames, buffer->ringBuffer.bufferContainer) {
-            //for( int i=0; i<frames.size(); i++ ) { std::cerr << frames.at(i) << ", "; }
             REQUIRE(frames.at(3) == 3);
         }
 
@@ -47,13 +49,20 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
         unsigned int delta = 5;
         REQUIRE(buffer->ringBuffer.rotateRingbuffers(delta) == true );
         foreach (QVector<double> frames, buffer->ringBuffer.bufferContainer) {
-            //for( int i=0; i<frames.size(); i++ ) { std::cerr << frames.at(i) << ", "; }
             REQUIRE(frames.at(delta) == 0);
         }
-        REQUIRE(buffer->ringBuffer.rotateRingbuffers(buffer->ringBufferSize()+1) == false);
+        REQUIRE_FALSE(buffer->ringBuffer.rotateRingbuffers(buffer->ringBufferSize()+1));
     }
 
-    SECTION("Raw Buffer -> Channels") {
+    SECTION("Ring Buffer -> Inserting")
+    {
+        QVector<unsigned int> channels({1,5});
+        REQUIRE(buffer->allocate(1024, channels));
+        REQUIRE(buffer->ringBuffer.insert(&buffer->rawBuffer.rawFrames, buffer->rawBufferSize(), buffer->numberOfChannels(true)));
+        REQUIRE_FALSE(buffer->ringBuffer.insert(&buffer->rawBuffer.rawFrames, buffer->ringBufferSize()*2, buffer->numberOfChannels(true)));
+    }
+
+    SECTION("Raw Buffer") {
         unsigned int hwBufferSize = 128;
         QVector<unsigned int> channels({1,3,5});
         REQUIRE(buffer->allocate(1024, channels, hwBufferSize));
@@ -81,6 +90,9 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
         for( unsigned int i=0; i<numOfRawChannels*2; i++ ) {
             REQUIRE(rawBuffer->rawFrames[i] == frames[i] );
         }
+
+        // Check reducing frame count to push
+        REQUIRE(rawBuffer->insert(frames.data(), numOfFrames*2));
     }
     delete buffer;
 }

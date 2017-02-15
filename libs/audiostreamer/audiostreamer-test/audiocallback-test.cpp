@@ -72,6 +72,9 @@ TEST_CASE( "AudioCallback", "[RtAudio]" )
                 REQUIRE(buffer->frameCounter == 0);
                 REQUIRE(AudioCallback::interleaved(NULL, hwBuffer, hwBufferSize, 1., 0, &streamer) == 0 );
                 REQUIRE(buffer->frameCounter == hwBufferSize);
+                
+                // Not full enough buffer
+                REQUIRE_FALSE(buffer->isFilled());
 
                 // Dequeue raw frames and populate ringbuffers
                 REQUIRE(buffer->rawBuffer.grabFramesFromQueue());
@@ -81,6 +84,12 @@ TEST_CASE( "AudioCallback", "[RtAudio]" )
                 for( unsigned int ch=0; ch<numOfChannels; ch++) {
                     REQUIRE(buffer->ringBuffer.bufferContainer.at(ch)[2] == 2);
                 }
+
+                // Check framecounter increment and check isFilled method.
+                REQUIRE(AudioCallback::interleaved(NULL, hwBuffer, hwBufferSize, 1., 0, &streamer) == 0 );
+                REQUIRE(AudioCallback::interleaved(NULL, hwBuffer, hwBufferSize, 1., 0, &streamer) == 0 );
+                REQUIRE(AudioCallback::interleaved(NULL, hwBuffer, hwBufferSize, 1., 0, &streamer) == 0 );
+                REQUIRE(buffer->isFilled());
             }
 
             SECTION("Ringbuffer size < raw buffer size") {
@@ -99,15 +108,20 @@ TEST_CASE( "AudioCallback", "[RtAudio]" )
                 for( unsigned int ch=0; ch<numOfChannels; ch++) {
                     REQUIRE(buffer->ringBuffer.bufferContainer.at(ch)[2] == 2);
                 }
+
+                // Check shifting N > ringbuffer size frames
+                REQUIRE_FALSE(buffer->ringBuffer.insert(&buffer->rawBuffer.rawFrames, ringBufferSize*2, numOfRawChannels));
             }
 
             SECTION("Without channels") {
+                ringBufferSize = 0;
                 REQUIRE_FALSE(buffer->allocate(ringBufferSize));
                 REQUIRE(buffer->rawBuffer.rawFrames.isEmpty());
                 REQUIRE(buffer->ringBuffer.channelIds.isEmpty());
                 REQUIRE(buffer->ringBuffer.bufferContainer.isEmpty());
                 REQUIRE(AudioCallback::interleaved(NULL, hwBuffer, hwBufferSize, 1., 0, &streamer) == 1 );
                 REQUIRE(buffer->frameCounter == 0);
+                REQUIRE_FALSE(buffer->isFilled());
             }
         }
         if( hwBuffer ) { delete[] hwBuffer; }

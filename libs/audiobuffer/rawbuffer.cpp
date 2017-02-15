@@ -74,7 +74,7 @@ bool RawBuffer::pushFramesToQueue(signed short* frames, unsigned int size)
 {
     unsigned int numOfFrames = rawBufferSize*numberOfChannels;
     if( size > numOfFrames ) {
-        std::cerr << "Reducing data to push from " << size << " to " << numOfFrames << std::endl;
+        std::cerr << "Warning: Reducing data to push from " << size << " to " << numOfFrames << std::endl;
         size = numOfFrames;
     }
     return rawBuffer->enqueue_bulk(frames, size);

@@ -70,7 +70,9 @@ bool RingBuffer::insert(QVector<signed short> *rawData, unsigned int numOfFrames
         unsigned int channelId = channelIds.at(ch) - lowestChannelId;
         QVector<double> *buffer = &bufferContainer[ch];
         for( unsigned int i=0; i<numOfFrames; i++ ) {
-            (*buffer)[i] = (double)rawData->at(i * rawChannelCount + channelId);
+            int idx = i * rawChannelCount + channelId;
+            if( idx >= rawData->size() ) break;
+            (*buffer)[i] = (double)rawData->at(idx);
         }
     }
     return success;
