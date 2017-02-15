@@ -39,7 +39,10 @@ TEST_CASE( "AudioProcessing", "[Algorithms]" )
 
     SECTION("Full processing pipeline") {
         AudioProcessing* processing = new AudioProcessing(NULL);
-        //processing->slotUpdateRingBuffers(buffer);
+        processing->slotUpdateRingBuffer(buffer);
+        foreach (double amp, processing->absoluteAmplitudes(buffer)) {
+           REQUIRE(amp == 0.5);
+        }
         processing->slotAudioProcessing();
         delete processing;
     }

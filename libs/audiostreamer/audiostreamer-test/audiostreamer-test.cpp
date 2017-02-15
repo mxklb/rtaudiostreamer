@@ -6,6 +6,7 @@
 class AudioStreamerMoc : public AudioStreamer {
 public:
     void updateProcessingBuffer() { slotUpdateBuffers(); }
+    AudioBuffer* getGrabbingBuffer() { return getAudioBuffer(); }
 };
 
 TEST_CASE( "AudioStreamer", "[RtAudio]" )
@@ -53,6 +54,7 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" )
                 AudioStreamerMoc streamerMoc;
                 // Dummy call to slotUpdateProcessingBuffer
                 streamerMoc.updateProcessingBuffer();
+                REQUIRE(streamerMoc.getGrabbingBuffer() != NULL);
             }
 
             // Test zero channels
