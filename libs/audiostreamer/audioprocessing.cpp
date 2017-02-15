@@ -32,7 +32,7 @@ void AudioProcessing::slotAudioProcessing()
 {
     // todo: Here should be dynamic channel processing pipline ..
 
-    QList<double> amplitudes = absoluteAmplitudes(&audioBuffer);
+    QList<double> amplitudes = absoluteAmplitudes(&audioBuffer, 32768);
     QList<double> loudness = logAmplitudes(amplitudes);
 
     // Just print some results to the terminal ..
@@ -50,7 +50,7 @@ void AudioProcessing::slotAudioProcessing()
  * Calculates the absolute mean amplitude for each channel.
  * Note: Returns absolute values in range 0..1
  */
-QList<double> AudioProcessing::absoluteAmplitudes(AudioBuffer *buffer)
+QList<double> AudioProcessing::absoluteAmplitudes(AudioBuffer *buffer, double normalize)
 {
     int numOfChannels = buffer->numberOfChannels();
 
@@ -61,10 +61,8 @@ QList<double> AudioProcessing::absoluteAmplitudes(AudioBuffer *buffer)
 
     RingBuffer *ringBuffer = &buffer->ringBuffer;
     for( int ch=0; ch<numOfChannels; ch++ ) {
-        for( unsigned int i=0; i<ringBuffer->ringBufferSize; i++ ) {
-            double amplitude = ringBuffer->bufferContainer.at(ch)[i];
-            amplitudes[ch] += fabs(amplitude / 32768.); // todo: get factor from used rtaudio data type
-        }
+        // todo: get normalize factor from used rtaudio data type ...
+        amplitudes[ch] += accumulate(ringBuffer->bufferContainer.at(ch), normalize);
     }
 
     for( int ch=0; ch<numOfChannels; ch++ ) {
@@ -72,6 +70,19 @@ QList<double> AudioProcessing::absoluteAmplitudes(AudioBuffer *buffer)
     }
 
     return amplitudes;
+}
+
+/*
+ * Accumulates all absolute values inside the frames vector. Optionally normalized and/or signed.
+ */
+double AudioProcessing::accumulate(QVector<double> frames, double norm, bool absolute)
+{
+    double amplitude = 0;
+    foreach (double value, frames) {
+        if( !absolute ) amplitude += value / norm;
+        else amplitude += fabs(value / norm);
+    }
+    return amplitude;
 }
 
 /*

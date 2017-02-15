@@ -7,22 +7,33 @@
 
 TEST_CASE( "AudioProcessing", "[Algorithms]" )
 {
-    AudioBuffer* buffer = new AudioBuffer();
+    double amplitudeValue = 0.5;
+    unsigned int numberOfFrames = 10;
+    double defaultValue = 32768 * amplitudeValue;
+
     QVector<unsigned int> channels;
     channels.push_back(0);
     channels.push_back(1);
-    buffer->allocate(10, channels, 256, -32768/2);
 
-    QList<double> amplitudes = AudioProcessing::absoluteAmplitudes(buffer);
+    AudioBuffer* buffer = new AudioBuffer();
+    buffer->allocate(numberOfFrames, channels, 256, defaultValue);
+
+    QList<double> amplitudes = AudioProcessing::absoluteAmplitudes(buffer, -defaultValue/amplitudeValue);
     QList<double> loudness = AudioProcessing::logAmplitudes(amplitudes);
 
-    SECTION("Amplitude calculation") {
+    SECTION("Amplitude Accumulation")
+    {
         foreach (double amp, amplitudes) {
-           REQUIRE(amp == 0.5);
+           REQUIRE(amp == amplitudeValue);
+        }
+        for(unsigned int ch=0; ch<buffer->numberOfChannels(); ch++) {
+            REQUIRE(AudioProcessing::accumulate(buffer->ringBuffer.bufferContainer.at(ch), defaultValue) == numberOfFrames);
+            REQUIRE(AudioProcessing::accumulate(buffer->ringBuffer.bufferContainer.at(ch), -defaultValue, false) == -(double)numberOfFrames);
         }
     }
 
-    SECTION("Loudness calculation") { // L=10*log10(A)
+    SECTION("Loudness Calculation") // L=10*log10(A)
+    {
         foreach (double loud, loudness) {
            REQUIRE((float)loud == (float)-3.0102999566);
         }
@@ -37,11 +48,12 @@ TEST_CASE( "AudioProcessing", "[Algorithms]" )
         REQUIRE((float)loudness[2] == (float)-6.0206);
     }
 
-    SECTION("Full processing pipeline") {
+    SECTION("Processing Pipeline")
+    {
         AudioProcessing* processing = new AudioProcessing(NULL);
         processing->slotUpdateRingBuffer(buffer);
-        foreach (double amp, processing->absoluteAmplitudes(buffer)) {
-           REQUIRE(amp == 0.5);
+        foreach (double amp, processing->absoluteAmplitudes(buffer, defaultValue/amplitudeValue)) {
+           REQUIRE(amp == amplitudeValue);
         }
         processing->slotAudioProcessing();
         delete processing;
