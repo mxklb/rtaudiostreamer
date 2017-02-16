@@ -44,6 +44,8 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" )
 
     SECTION("Streaming")
     {
+        REQUIRE(streamer->getGrabbingBuffer() != NULL);
+
         if( !streamer->getListOfDevices().isEmpty() ) {
             // Start streaming
             if( streamer->startStream() ) {
@@ -54,7 +56,6 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" )
             }
 
             streamer->updateProcessingBuffer();
-            REQUIRE(streamer->getGrabbingBuffer() != NULL);
 
             // Test zero channels
             QVector<unsigned int> channels;

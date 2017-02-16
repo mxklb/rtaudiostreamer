@@ -12,7 +12,8 @@ macx {
 
 SOURCES += audiostreamer.cpp \
     audioprocessing.cpp \
-    audiocallback.cpp
+    audiocallback.cpp \
+    streamsettings.cpp
 HEADERS += audiostreamer.h \
     audioprocessing.h \
     streamsettings.h \
