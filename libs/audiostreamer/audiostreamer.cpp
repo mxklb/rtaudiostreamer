@@ -219,16 +219,25 @@ void AudioStreamer::slotUpdateBuffers()
         if( audioBuffer.rawBuffer.grabFramesFromQueue() )
         {
             audioProcessing.slotUpdateRingBuffer(&audioBuffer);
-
-            // trigger processing within processingInterval
-            // Hmm .. this is not tight/equidistant enough. Just triggered from audio callback -> jitter :(
-            unsigned int msElappsed = (unsigned int)((processingIntervalTimer.nsecsElapsed()/1000000.)+0.5);
-
-            if( msElappsed > processingInterval && audioBuffer.isFilled() ) {
-                processingIntervalTimer.restart();
-                audioProcessing.slotAudioProcessing();
-            }
+            processLatestAudio();
         }
         else { cerr << "Warning: Detected missing frames .." << endl; }
     }
+}
+
+/*
+ * Calls the audio processing slot. Returns true if processing happend.
+ * The allowed interval between audio processings is limited by an interval!
+ */
+bool AudioStreamer::processLatestAudio()
+{
+    bool processingTriggered = false;
+    unsigned int msElappsed = (unsigned int)((processingIntervalTimer.nsecsElapsed()/1000000.)+0.5);
+
+    if( msElappsed > processingInterval && audioBuffer.isFilled() ) {
+        processingIntervalTimer.restart();
+        audioProcessing.slotAudioProcessing();
+        processingTriggered = true;
+    }
+    return processingTriggered;
 }

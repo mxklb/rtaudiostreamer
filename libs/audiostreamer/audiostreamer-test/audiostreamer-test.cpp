@@ -42,6 +42,16 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" )
         } else WARN("Testing disabled: RtAudio no audio device found!");
     }
 
+    SECTION("Stream Settings")
+    {
+        REQUIRE(StreamSettings::formatLimit(RTAUDIO_SINT8) == 127);
+        REQUIRE(StreamSettings::formatLimit(RTAUDIO_SINT16) == 32767);
+        REQUIRE(StreamSettings::formatLimit(RTAUDIO_SINT32) == 2147483647);
+        REQUIRE(StreamSettings::formatLimit(RTAUDIO_FLOAT32) == std::numeric_limits<float>::max());
+        REQUIRE(StreamSettings::formatLimit(RTAUDIO_FLOAT64) == std::numeric_limits<double>::max());
+        REQUIRE(StreamSettings::formatLimit(0x40) == 32767);
+    }
+
     SECTION("Streaming")
     {
         REQUIRE(streamer->getGrabbingBuffer() != NULL);

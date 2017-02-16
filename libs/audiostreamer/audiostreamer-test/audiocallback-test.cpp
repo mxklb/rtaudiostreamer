@@ -1,4 +1,5 @@
 #include <RtAudio.h>
+#include <unistd.h>
 #include "catch.hpp"
 #include "audiobuffer.h"
 #include "audiocallback.h"
@@ -10,9 +11,10 @@
 class testAudioStreamer : public AudioStreamer
 {
 public:
-    AudioBuffer* getStreamerBuffer() {
-        return getAudioBuffer();
-    }
+    AudioBuffer* getStreamerBuffer() { return getAudioBuffer(); }
+    void startIntervalTimer() { processingIntervalTimer.start(); }
+    void setInterval(unsigned int ms) { processingInterval = ms; }
+    bool pollProcessing(){ return processLatestAudio(); }
 };
 
 /*
@@ -90,6 +92,19 @@ TEST_CASE( "AudioCallback", "[RtAudio]" )
                 REQUIRE(AudioCallback::interleaved(NULL, hwBuffer, hwBufferSize, 1., 0, &streamer) == 0 );
                 REQUIRE(AudioCallback::interleaved(NULL, hwBuffer, hwBufferSize, 1., 0, &streamer) == 0 );
                 REQUIRE(buffer->isFilled());
+
+                // Check interval process polling
+                int interval = 10;
+                streamer.setInterval(interval);
+                streamer.startIntervalTimer();
+                REQUIRE_FALSE(streamer.pollProcessing());
+                usleep(interval*1200);
+                REQUIRE(streamer.pollProcessing());
+                REQUIRE_FALSE(streamer.pollProcessing());
+                usleep(interval*250);
+                REQUIRE_FALSE(streamer.pollProcessing());
+                usleep(interval*1200);
+                REQUIRE(streamer.pollProcessing());
             }
 
             SECTION("Ringbuffer size < raw buffer size") {

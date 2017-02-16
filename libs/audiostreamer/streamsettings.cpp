@@ -24,13 +24,13 @@ double StreamSettings::formatLimit()
  */
 double StreamSettings::formatLimit(RtAudioFormat type)
 {
-    double defaultValue = 32768;
+    double defaultValue = 32767;
     switch( type ) {
-        case RTAUDIO_SINT8: return std::numeric_limits<qint8>::max()+1;
-        case RTAUDIO_SINT16: return std::numeric_limits<qint16>::max()+1;
-        case RTAUDIO_SINT32: return std::numeric_limits<qint32>::max()+1;
-        case RTAUDIO_FLOAT32: return std::numeric_limits<float>::max()+1;
-        case RTAUDIO_FLOAT64: return std::numeric_limits<qreal>::max()+1;
+        case RTAUDIO_SINT8: return std::numeric_limits<qint8>::max();
+        case RTAUDIO_SINT16: return std::numeric_limits<qint16>::max();
+        case RTAUDIO_SINT32: return std::numeric_limits<qint32>::max();
+        case RTAUDIO_FLOAT32: return std::numeric_limits<float>::max();
+        case RTAUDIO_FLOAT64: return std::numeric_limits<qreal>::max();
     }
     return defaultValue;
 }

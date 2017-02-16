@@ -34,6 +34,7 @@ public:
 protected:
     AudioBuffer* getAudioBuffer() { return &audioBuffer; }
     void callbackFinished() { emit audioCallbackFinished(); }
+    bool processLatestAudio();
 
 protected slots:
     void slotUpdateBuffers();
@@ -43,6 +44,10 @@ signals:
     void rawBufferChanged(AudioBuffer* buffer);
     void audioCallbackFinished();
 
+protected:
+    QElapsedTimer processingIntervalTimer;
+    unsigned int processingInterval;
+
 private:
     RtAudio* rtAudio;
     unsigned int activeDeviceId;
@@ -51,8 +56,6 @@ private:
 
     AudioBuffer audioBuffer;
     AudioProcessing audioProcessing;
-    QElapsedTimer processingIntervalTimer;
-    unsigned int processingInterval;
 
     void setupDeviceList();
     void allocateRingBuffers(QVector<unsigned int> channels, unsigned int size = 8192, unsigned int hwBufferSize = 256);
