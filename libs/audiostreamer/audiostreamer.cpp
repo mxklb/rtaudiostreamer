@@ -152,6 +152,7 @@ bool AudioStreamer::startStream(StreamSettings settings)
     }
 
     streamSettings = settings;
+    audioProcessing.streamSettings = settings;
 
     RtAudio::StreamParameters parameters = settings.parameters;
     parameters.deviceId = activeDeviceId;

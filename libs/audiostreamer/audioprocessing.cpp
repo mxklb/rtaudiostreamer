@@ -32,7 +32,7 @@ void AudioProcessing::slotAudioProcessing()
 {
     // todo: Here should be dynamic channel processing pipline ..
 
-    QList<double> amplitudes = absoluteAmplitudes(&audioBuffer, 32768);
+    QList<double> amplitudes = absoluteAmplitudes(&audioBuffer, streamSettings.formatLimit());
     QList<double> loudness = logAmplitudes(amplitudes);
 
     // Just print some results to the terminal ..

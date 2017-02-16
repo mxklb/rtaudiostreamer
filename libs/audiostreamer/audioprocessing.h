@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "audiobuffer.h"
+#include "streamsettings.h"
 
 class AudioProcessing : public QObject
 {
@@ -10,7 +11,9 @@ class AudioProcessing : public QObject
 public:
     explicit AudioProcessing(QObject *parent = 0);
 
-    static QList<double> absoluteAmplitudes(AudioBuffer *buffer, double normalize = 32768);
+    StreamSettings streamSettings;
+
+    static QList<double> absoluteAmplitudes(AudioBuffer *buffer, double normalize = 1);
     static QList<double> logAmplitudes(QList<double> amplitudes, double factor = 10.);
 
     static double accumulate(QVector<double> frames, double norm = 1, bool absolute = true);

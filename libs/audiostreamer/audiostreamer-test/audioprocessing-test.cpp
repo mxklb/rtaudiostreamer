@@ -4,19 +4,22 @@
 #include "catch.hpp"
 #include "audiobuffer.h"
 #include "audioprocessing.h"
+#include "streamsettings.h"
 
 TEST_CASE( "AudioProcessing", "[Algorithms]" )
 {
     double amplitudeValue = 0.5;
     unsigned int numberOfFrames = 10;
-    double defaultValue = 32768 * amplitudeValue;
+    unsigned int hwBufferSize = 256;
+    StreamSettings *settings = new StreamSettings();
+    double defaultValue = settings->formatLimit() * amplitudeValue;
 
     QVector<unsigned int> channels;
     channels.push_back(0);
     channels.push_back(1);
 
     AudioBuffer* buffer = new AudioBuffer();
-    buffer->allocate(numberOfFrames, channels, 256, defaultValue);
+    buffer->allocate(numberOfFrames, channels, hwBufferSize, defaultValue);
 
     QList<double> amplitudes = AudioProcessing::absoluteAmplitudes(buffer, -defaultValue/amplitudeValue);
     QList<double> loudness = AudioProcessing::logAmplitudes(amplitudes);
@@ -60,6 +63,7 @@ TEST_CASE( "AudioProcessing", "[Algorithms]" )
     }
 
     delete buffer;
+    delete settings;
 }
 
 #endif // AUDIOPROCESSINGTEST_CPP
