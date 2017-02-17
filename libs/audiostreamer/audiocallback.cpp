@@ -15,7 +15,6 @@ int AudioCallback::interleaved( void *outputBuffer, void *inputBuffer, unsigned 
     if( status ) std::cerr << "Stream over/underflow detected." << std::endl;
     if( hwFrameCount == 0 ) std::cerr << "Zero frames detected." << std::endl;
 
-    signed short *frames = (signed short*)inputBuffer;
     AudioStreamer *audioStreamer = (AudioStreamer*)streamer;
     AudioBuffer *audioBuffer = audioStreamer->getAudioBuffer();
     unsigned int rawChannels = audioBuffer->numberOfChannels(true);
@@ -24,6 +23,10 @@ int AudioCallback::interleaved( void *outputBuffer, void *inputBuffer, unsigned 
         std::cerr << "Zero channels detected." << std::endl;
         return 1;
     }
+
+    // Get data type of raw frames and convert inputBuffer
+    typedef std::remove_reference<decltype(audioBuffer->rawBuffer.rawFrames[0])>::type audioFormat;
+    audioFormat *frames = (audioFormat*)inputBuffer;
 
     if( !audioBuffer->rawBuffer.insert(frames, rawChannels*hwFrameCount) ) {
         std::cerr << "Buffer overrun detected! @Streamtime: " << streamTime << std::endl;

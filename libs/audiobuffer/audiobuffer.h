@@ -2,6 +2,7 @@
 #define AUDIOBUFFER_H
 
 #include "rawbuffer.h"
+#include "rawbuffer.cpp"
 #include "ringbuffer.h"
 
 class AudioBuffer {
@@ -11,8 +12,8 @@ public:
     double streamTimeStamp;
     unsigned long frameCounter;
 
-    RawBuffer rawBuffer;
     RingBuffer ringBuffer;
+    RawBuffer<signed short> rawBuffer;
 
     bool allocate(unsigned int ringBufferSize, QVector<unsigned int> channels = QVector<unsigned int>(),
                   unsigned int hwBufferSize = 256, double value = 0.0);

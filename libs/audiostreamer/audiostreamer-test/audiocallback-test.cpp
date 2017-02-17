@@ -20,7 +20,8 @@ public:
 /*
  * Init interleaved hwBuffer. Each channel values [0..hwBufferSize]
  */
-void initHwBuffer(signed short* buffer, unsigned int hwBufferSize, unsigned int numOfChannels)
+template <typename type>
+void initHwBuffer(type* buffer, unsigned int hwBufferSize, unsigned int numOfChannels)
 {
     unsigned int index = 0;
     for( unsigned int i=0; i<hwBufferSize; i++) {
@@ -53,7 +54,6 @@ TEST_CASE( "AudioCallback", "[RtAudio]" )
 
     if( !streamer.getListOfDevices().isEmpty() )
     {
-        signed short* hwBuffer = NULL;
         QVector<unsigned int> channelIds = streamer.getInputChannelIds();
 
         if( channelIds.size() > 0 )
@@ -65,7 +65,10 @@ TEST_CASE( "AudioCallback", "[RtAudio]" )
             unsigned int hwBufferSize = 256;
             unsigned int ringBufferSize = 1024;
 
-            hwBuffer = new signed short[hwBufferSize*numOfRawChannels];
+            // Get data type of raw frames and setup frames array/vector
+            typedef std::remove_reference<decltype(buffer->rawBuffer.rawFrames[0])>::type audioFormat;
+
+            audioFormat* hwBuffer = new audioFormat[hwBufferSize*numOfRawChannels];
             initHwBuffer(hwBuffer, hwBufferSize, numOfRawChannels);
 
             SECTION("Ringbuffer size > raw buffer size") {
@@ -138,7 +141,7 @@ TEST_CASE( "AudioCallback", "[RtAudio]" )
                 REQUIRE(buffer->frameCounter == 0);
                 REQUIRE_FALSE(buffer->isFilled());
             }
+            if( hwBuffer ) { delete[] hwBuffer; }
         }
-        if( hwBuffer ) { delete[] hwBuffer; }
     } else WARN("Tests disabled: RtAudio no audio device found!");
 }

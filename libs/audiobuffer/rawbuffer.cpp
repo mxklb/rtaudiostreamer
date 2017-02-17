@@ -4,25 +4,28 @@
 /*
  * Constructor
  */
-RawBuffer::RawBuffer()
+template<class type>
+RawBuffer<type>::RawBuffer()
 {
     rawBuffer = NULL;
     rawBufferSize = 0;
     numberOfChannels = 0;
-    rawFrames = QVector<signed short>();
+    rawFrames = QVector<type>();
 }
 
 /*
  * Destructor
  */
-RawBuffer::~RawBuffer() {
+template<class type>
+RawBuffer<type>::~RawBuffer() {
     clear();
 }
 
 /*
  * Allocates numberOfFrames frames for each numOfChannels, assignes em with given value.
  */
-bool RawBuffer::allocate(unsigned int numberOfFrames, unsigned int numOfChannels, signed short value)
+template<class type>
+bool RawBuffer<type>::allocate(unsigned int numberOfFrames, unsigned int numOfChannels, type value)
 {
     clear();
 
@@ -32,8 +35,8 @@ bool RawBuffer::allocate(unsigned int numberOfFrames, unsigned int numOfChannels
 
     rawBufferSize = numberOfFrames;
     numberOfChannels = numOfChannels;
-    rawFrames = QVector<signed short>(bufferSize, value);
-    rawBuffer = new moodycamel::ConcurrentQueue<signed short>(bufferSize,1,1);
+    rawFrames = QVector<type>(bufferSize, value);
+    rawBuffer = new moodycamel::ConcurrentQueue<type>(bufferSize,1,1);
 
     return true;
 }
@@ -41,11 +44,12 @@ bool RawBuffer::allocate(unsigned int numberOfFrames, unsigned int numOfChannels
 /*
  * Frees all pre-allocated memory
  */
-void RawBuffer::clear()
+template<class type>
+void RawBuffer<type>::clear()
 {
     rawBufferSize = 0;
     numberOfChannels = 0;
-    rawFrames = QVector<signed short>();
+    rawFrames = QVector<type>();
     if( rawBuffer != NULL ) {
         delete rawBuffer;
         rawBuffer = NULL;
@@ -58,7 +62,8 @@ void RawBuffer::clear()
  * If dequeue true directly populates rawFrames buffer.
  * Otherwise call popRawDataFromQueue afterwards manually.
  */
-bool RawBuffer::insert(signed short* frames, unsigned int size, bool dequeue)
+template<class type>
+bool RawBuffer<type>::insert(type* frames, unsigned int size, bool dequeue)
 {
     bool success = pushFramesToQueue(frames, size);
     if( success && dequeue == true ) {
@@ -70,7 +75,8 @@ bool RawBuffer::insert(signed short* frames, unsigned int size, bool dequeue)
 /*
  * Thread save: Insert/push frames into concurrent queue (size = channelCount*hwBuffer)
  */
-bool RawBuffer::pushFramesToQueue(signed short* frames, unsigned int size)
+template<class type>
+bool RawBuffer<type>::pushFramesToQueue(type* frames, unsigned int size)
 {
     unsigned int numOfFrames = rawBufferSize*numberOfChannels;
     if( size > numOfFrames ) {
@@ -83,13 +89,14 @@ bool RawBuffer::pushFramesToQueue(signed short* frames, unsigned int size)
 /*
  * Thread save: Moves/pops frames from concurrent queue to
  */
-bool RawBuffer::grabFramesFromQueue()
+template<class type>
+bool RawBuffer<type>::grabFramesFromQueue()
 {
     int retryCounter = 0;
     size_t framesCopied = 0;
     size_t missingFrames = rawFrames.size();
     while (missingFrames > 0 ) {
-        framesCopied += rawBuffer->try_dequeue_bulk(rawFrames.data() + framesCopied*sizeof(signed short), missingFrames);
+        framesCopied += rawBuffer->try_dequeue_bulk(rawFrames.data() + framesCopied*sizeof(type), missingFrames);
         missingFrames = rawBuffer->size_approx();
         if( missingFrames > 0 ) {
             retryCounter++;

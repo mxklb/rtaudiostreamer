@@ -24,7 +24,6 @@ public slots:
 
 private:
     AudioBuffer audioBuffer;
-    bool updateRingBuffers(QVector<signed short> *rawData, unsigned int numOfChannels);
 };
 
 #endif // AUDIOPROCESSING_H

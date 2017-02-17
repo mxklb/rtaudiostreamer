@@ -4,6 +4,7 @@
 #include "concurrentqueue.h"
 #include <QVector>
 
+template <class type>
 class RawBuffer {
 public:
     RawBuffer();
@@ -11,15 +12,16 @@ public:
 
     unsigned int rawBufferSize;
     unsigned int numberOfChannels;
-    QVector<signed short> rawFrames;
-    moodycamel::ConcurrentQueue<signed short>* rawBuffer;
+    QVector<type> rawFrames;
+    moodycamel::ConcurrentQueue<type>* rawBuffer;
 
-    bool allocate(unsigned int size, unsigned int numOfChannels, signed short value = 0);
-    bool insert(signed short* data, unsigned int size, bool dequeue = false);
+    bool allocate(unsigned int size, unsigned int numOfChannels, type value = 0);
+    bool insert(type* data, unsigned int size, bool dequeue = false);
 
     bool grabFramesFromQueue();
+
 private:
-    bool pushFramesToQueue(signed short* frames, unsigned int size);
+    bool pushFramesToQueue(type* frames, unsigned int size);
     void clear();
 };
 

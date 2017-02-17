@@ -66,33 +66,34 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
         unsigned int hwBufferSize = 128;
         QVector<unsigned int> channels({1,3,5});
         REQUIRE(buffer->allocate(1024, channels, hwBufferSize));
+        unsigned int numOfRawChannels = buffer->numberOfChannels(true);
+        unsigned int numOfFrames = hwBufferSize*numOfRawChannels;
 
         // Test raw buffer channel setup
-        unsigned int numOfRawChannels = buffer->numberOfChannels(true);
-        REQUIRE(numOfRawChannels == channels.last() - channels.first() + 1);
         REQUIRE(buffer->rawBufferSize() == hwBufferSize);
+        REQUIRE(numOfRawChannels == channels.last() - channels.first() + 1);
+        REQUIRE(buffer->rawBuffer.rawFrames.size() == numOfFrames);
 
-        RawBuffer *rawBuffer = &buffer->rawBuffer;
-        REQUIRE(rawBuffer->rawFrames.size() == numOfRawChannels * hwBufferSize);
+        // Get data type of raw frames and setup frames array/vector
+        typedef std::remove_reference<decltype(buffer->rawBuffer.rawFrames[0])>::type audioFormat;
 
-        // Test raw buffer insert operation
-        unsigned int numOfFrames = hwBufferSize*numOfRawChannels;
-        QVector<signed short> frames = QVector<signed short>(numOfFrames, -10);
+        QVector<audioFormat> frames = QVector<audioFormat>(numOfFrames, -10);
         for( unsigned int ch=0; ch<numOfRawChannels; ch++ ) {
             for( unsigned int i=0; i<hwBufferSize; i++ ) {
                 frames[i*ch + ch] = i;
             }
         }
 
-        REQUIRE(rawBuffer->insert(frames.data(), numOfFrames, true));
+        // Test raw buffer insert operation
+        REQUIRE(buffer->rawBuffer.insert(frames.data(), numOfFrames, true));
 
         // Check first two frames from each channel
         for( unsigned int i=0; i<numOfRawChannels*2; i++ ) {
-            REQUIRE(rawBuffer->rawFrames[i] == frames[i] );
+            REQUIRE(buffer->rawBuffer.rawFrames[i] == frames[i] );
         }
 
         // Check reducing frame count to push
-        REQUIRE(rawBuffer->insert(frames.data(), numOfFrames*2));
+        REQUIRE(buffer->rawBuffer.insert(frames.data(), numOfFrames*2));
     }
     delete buffer;
 }

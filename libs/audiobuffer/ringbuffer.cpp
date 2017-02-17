@@ -1,3 +1,4 @@
+#include <QSettings>
 #include <algorithm>
 #include "ringbuffer.h"
 
@@ -5,7 +6,8 @@
  * Constructor
  */
 RingBuffer::RingBuffer() {
-    allocate(1024);
+    QSettings settings;
+    allocate(settings.value("audiostreamer/processingBufferSize", 8192).toUInt());
 }
 
 /*
@@ -50,30 +52,4 @@ bool RingBuffer::rotateRingbuffers(unsigned int delta)
         std::rotate(buffer->begin(), buffer->begin() + (buffer->size()-delta), buffer->end());
     }
     return true;
-}
-
-/*
- * Rotate/shift actual content numOfFrames. Afterwards set first numOfFrames values from rawData.
- */
-bool RingBuffer::insert(QVector<signed short> *rawData, unsigned int numOfFrames, unsigned int rawChannelCount)
-{
-    unsigned int lowestChannelId = channelIds.first();
-    unsigned int numOfChannels = channelIds.size();
-    bool success = true;
-
-    if( !rotateRingbuffers(numOfFrames) ) {
-        numOfFrames = ringBufferSize;
-        success = false;
-    }
-
-    for( unsigned int ch=0; ch<numOfChannels; ch++ ) {
-        unsigned int channelId = channelIds.at(ch) - lowestChannelId;
-        QVector<double> *buffer = &bufferContainer[ch];
-        for( unsigned int i=0; i<numOfFrames; i++ ) {
-            int idx = i * rawChannelCount + channelId;
-            if( idx >= rawData->size() ) break;
-            (*buffer)[i] = (double)rawData->at(idx);
-        }
-    }
-    return success;
 }
