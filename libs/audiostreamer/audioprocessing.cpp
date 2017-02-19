@@ -1,3 +1,4 @@
+#include <QSettings>
 #include <iostream>
 #include <iomanip>
 #include <math.h>
@@ -6,7 +7,17 @@
 
 using namespace std;
 
-AudioProcessing::AudioProcessing(QObject *parent) : QObject(parent) { }
+// Minimal allowed sample amplitude
+double AudioProcessing::silenceGate = 7.15256e-07;
+
+/*
+ * Constructor (set gate threshold from config)
+ */
+AudioProcessing::AudioProcessing(QObject *parent) : QObject(parent)
+{
+    QSettings settings;
+    silenceGate = settings.value("audiostreamer/silenceGate", 7.15256e-07).toDouble();
+}
 
 /*
  * Updates the internally used audioBuffers: Using data from the given buffer.
@@ -92,8 +103,8 @@ QList<double> AudioProcessing::logAmplitudes(QList<double> amplitudes, double fa
 {
     QList<double> loudness;
     foreach (double amplitude, amplitudes) {
-        if( amplitude < 7.15256e-07 )
-            amplitude = 7.15256e-07; // gateing ?
+        if( amplitude < silenceGate )
+            amplitude = silenceGate;
         loudness.push_back(factor*log10(amplitude));
     }
     return loudness;

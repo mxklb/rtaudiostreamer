@@ -24,6 +24,7 @@ public slots:
 
 private:
     AudioBuffer audioBuffer;
+    static double silenceGate;
 };
 
 #endif // AUDIOPROCESSING_H
