@@ -22,7 +22,7 @@ void AudioProcessing::slotUpdateRingBuffer(AudioBuffer *buffer)
 
     audioBuffer.frameCounter = buffer->frameCounter;
     audioBuffer.streamTimeStamp = buffer->streamTimeStamp;
-    audioBuffer.ringBuffer.insert(&buffer->rawBuffer.rawFrames, buffer->rawBufferSize(), buffer->numberOfChannels(true));
+    audioBuffer.ringBuffer.insert(&buffer->rawBuffer->frames, buffer->rawBufferSize(), buffer->numberOfChannels(true));
 }
 
 /*

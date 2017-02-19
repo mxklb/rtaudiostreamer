@@ -47,7 +47,6 @@ void printBuffer(QList<QVector<double> > bufferContainer, int range = 10)
     }
 }
 
-
 TEST_CASE( "AudioCallback", "[RtAudio]" )
 {
     testAudioStreamer streamer;
@@ -65,10 +64,8 @@ TEST_CASE( "AudioCallback", "[RtAudio]" )
             unsigned int hwBufferSize = 256;
             unsigned int ringBufferSize = 1024;
 
-            // Get data type of raw frames and setup frames array/vector
-            typedef std::remove_reference<decltype(buffer->rawBuffer.rawFrames[0])>::type audioFormat;
-
-            audioFormat* hwBuffer = new audioFormat[hwBufferSize*numOfRawChannels];
+            // Setup frames array/vector
+            qint16* hwBuffer = new qint16[hwBufferSize*numOfRawChannels];
             initHwBuffer(hwBuffer, hwBufferSize, numOfRawChannels);
 
             SECTION("Ringbuffer size > raw buffer size") {
@@ -82,8 +79,8 @@ TEST_CASE( "AudioCallback", "[RtAudio]" )
                 REQUIRE_FALSE(buffer->isFilled());
 
                 // Dequeue raw frames and populate ringbuffers
-                REQUIRE(buffer->rawBuffer.grabFramesFromQueue());
-                REQUIRE(buffer->ringBuffer.insert(&buffer->rawBuffer.rawFrames, hwBufferSize, numOfRawChannels));
+                REQUIRE(buffer->rawBuffer->grabFramesFromQueue());
+                REQUIRE(buffer->ringBuffer.insert(&buffer->rawBuffer->frames, hwBufferSize, numOfRawChannels));
 
                 // Check if buffer is correctly filled
                 for( unsigned int ch=0; ch<numOfChannels; ch++) {
@@ -119,8 +116,8 @@ TEST_CASE( "AudioCallback", "[RtAudio]" )
                 REQUIRE(buffer->frameCounter == hwBufferSize);
 
                 // Dequeue raw frames and populate ringbuffers
-                REQUIRE(buffer->rawBuffer.grabFramesFromQueue());
-                REQUIRE(buffer->ringBuffer.insert(&buffer->rawBuffer.rawFrames, ringBufferSize, numOfRawChannels));
+                REQUIRE(buffer->rawBuffer->grabFramesFromQueue());
+                REQUIRE(buffer->ringBuffer.insert(&buffer->rawBuffer->frames, ringBufferSize, numOfRawChannels));
 
                 // Check if buffer is correctly filled
                 for( unsigned int ch=0; ch<numOfChannels; ch++) {
@@ -128,13 +125,13 @@ TEST_CASE( "AudioCallback", "[RtAudio]" )
                 }
 
                 // Check shifting N > ringbuffer size frames
-                REQUIRE_FALSE(buffer->ringBuffer.insert(&buffer->rawBuffer.rawFrames, ringBufferSize*2, numOfRawChannels));
+                REQUIRE_FALSE(buffer->ringBuffer.insert(&buffer->rawBuffer->frames, ringBufferSize*2, numOfRawChannels));
             }
 
             SECTION("Without channels") {
                 ringBufferSize = 0;
                 REQUIRE_FALSE(buffer->allocate(ringBufferSize));
-                REQUIRE(buffer->rawBuffer.rawFrames.isEmpty());
+                REQUIRE(buffer->rawBuffer->frames.isEmpty());
                 REQUIRE(buffer->ringBuffer.channelIds.isEmpty());
                 REQUIRE(buffer->ringBuffer.bufferContainer.isEmpty());
                 REQUIRE(AudioCallback::interleaved(NULL, hwBuffer, hwBufferSize, 1., 0, &streamer) == 1 );

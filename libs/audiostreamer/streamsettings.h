@@ -7,10 +7,11 @@ class StreamSettings {
 public:
     StreamSettings();
 
-    RtAudioFormat format;
+    RtAudioFormat audioFormat;
     unsigned int hwSampleRate;
     unsigned int hwBufferSize;
     RtAudio::StreamParameters parameters;
+    RtAudio::StreamOptions options;
 
     static double formatLimit(RtAudioFormat type);
     double formatLimit();

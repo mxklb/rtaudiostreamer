@@ -167,7 +167,12 @@ bool AudioStreamer::startStream(StreamSettings settings)
     cout << endl;
 
     try {
-        rtAudio->openStream(NULL, &parameters, settings.format, settings.hwSampleRate, &settings.hwBufferSize, &AudioCallback::interleaved, this);
+        rtAudio->openStream(NULL, &parameters,
+                            settings.audioFormat,
+                            settings.hwSampleRate,
+                            &settings.hwBufferSize,
+                            &AudioCallback::interleaved,
+                            this, &settings.options);
         rtAudio->startStream();
         processingIntervalTimer.restart();
     }
@@ -216,7 +221,7 @@ void AudioStreamer::slotUpdateBuffers()
 {
     if( rtAudio->isStreamRunning() && rtAudio->isStreamOpen() )
     {
-        if( audioBuffer.rawBuffer.grabFramesFromQueue() )
+        if( audioBuffer.rawBuffer->grabFramesFromQueue() )
         {
             audioProcessing.slotUpdateRingBuffer(&audioBuffer);
             processLatestAudio();

@@ -1,5 +1,4 @@
 #include "streamsettings.h"
-
 #include <QSettings>
 #include <limits>
 
@@ -8,7 +7,11 @@ StreamSettings::StreamSettings()
     QSettings settings;
     hwSampleRate = settings.value("audiostreamer/hwSampleRate", 44100).toUInt();
     hwBufferSize = settings.value("audiostreamer/hwBufferSize", 256).toUInt();
-    format = settings.value("audiostreamer/rtAudioFormat", (int)RTAUDIO_SINT16).toUInt();
+	audioFormat = settings.value("audiostreamer/rtAudioFormat", (unsigned int)0x2).toUInt();
+    options.numberOfBuffers = settings.value("audiostreamer/rtNumberOfBuffers", 0).toUInt();
+    options.priority = settings.value("audiostreamer/rtPriority", 0).toUInt();
+    options.flags = settings.value("audiostreamer/rtAudioOptionFlags", 0).toUInt();
+    options.streamName = "RtAudioStreamer";
 }
 
 /*
@@ -16,7 +19,7 @@ StreamSettings::StreamSettings()
  */
 double StreamSettings::formatLimit()
 {
-    return formatLimit(format);
+    return formatLimit(audioFormat);
 }
 
 /*
@@ -24,7 +27,7 @@ double StreamSettings::formatLimit()
  */
 double StreamSettings::formatLimit(RtAudioFormat type)
 {
-    double defaultValue = 32767;
+    double defaultValue = 32767; // qint16 = RTAUDIO_SINT16
     switch( type ) {
         case RTAUDIO_SINT8: return std::numeric_limits<qint8>::max();
         case RTAUDIO_SINT16: return std::numeric_limits<qint16>::max();

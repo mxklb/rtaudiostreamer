@@ -58,8 +58,8 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
     {
         QVector<unsigned int> channels({1,5});
         REQUIRE(buffer->allocate(1024, channels));
-        REQUIRE(buffer->ringBuffer.insert(&buffer->rawBuffer.rawFrames, buffer->rawBufferSize(), buffer->numberOfChannels(true)));
-        REQUIRE_FALSE(buffer->ringBuffer.insert(&buffer->rawBuffer.rawFrames, buffer->ringBufferSize()*2, buffer->numberOfChannels(true)));
+        REQUIRE(buffer->ringBuffer.insert(&buffer->rawBuffer->frames, buffer->rawBufferSize(), buffer->numberOfChannels(true)));
+        REQUIRE_FALSE(buffer->ringBuffer.insert(&buffer->rawBuffer->frames, buffer->ringBufferSize()*2, buffer->numberOfChannels(true)));
     }
 
     SECTION("Raw Buffer") {
@@ -72,12 +72,10 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
         // Test raw buffer channel setup
         REQUIRE(buffer->rawBufferSize() == hwBufferSize);
         REQUIRE(numOfRawChannels == channels.last() - channels.first() + 1);
-        REQUIRE(buffer->rawBuffer.rawFrames.size() == numOfFrames);
+        REQUIRE(buffer->rawBuffer->frames.size() == numOfFrames);
 
-        // Get data type of raw frames and setup frames array/vector
-        typedef std::remove_reference<decltype(buffer->rawBuffer.rawFrames[0])>::type audioFormat;
-
-        QVector<audioFormat> frames = QVector<audioFormat>(numOfFrames, -10);
+        // Setup frames array/vector
+        QVector<qint16> frames = QVector<qint16>(numOfFrames, -10);
         for( unsigned int ch=0; ch<numOfRawChannels; ch++ ) {
             for( unsigned int i=0; i<hwBufferSize; i++ ) {
                 frames[i*ch + ch] = i;
@@ -85,15 +83,15 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
         }
 
         // Test raw buffer insert operation
-        REQUIRE(buffer->rawBuffer.insert(frames.data(), numOfFrames, true));
+        REQUIRE(buffer->rawBuffer->insert((void*)frames.data(), numOfFrames, true));
 
         // Check first two frames from each channel
         for( unsigned int i=0; i<numOfRawChannels*2; i++ ) {
-            REQUIRE(buffer->rawBuffer.rawFrames[i] == frames[i] );
+            REQUIRE(buffer->rawBuffer->frames[i] == frames[i] );
         }
 
         // Check reducing frame count to push
-        REQUIRE(buffer->rawBuffer.insert(frames.data(), numOfFrames*2));
+        REQUIRE(buffer->rawBuffer->insert((void*)frames.data(), numOfFrames*2));
     }
     delete buffer;
 }

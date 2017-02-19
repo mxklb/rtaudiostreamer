@@ -8,37 +8,16 @@ template<class type>
 RawBuffer<type>::RawBuffer()
 {
     rawBuffer = NULL;
-    rawBufferSize = 0;
-    numberOfChannels = 0;
-    rawFrames = QVector<type>();
+    clear();
 }
 
 /*
  * Destructor
  */
 template<class type>
-RawBuffer<type>::~RawBuffer() {
-    clear();
-}
-
-/*
- * Allocates numberOfFrames frames for each numOfChannels, assignes em with given value.
- */
-template<class type>
-bool RawBuffer<type>::allocate(unsigned int numberOfFrames, unsigned int numOfChannels, type value)
+RawBuffer<type>::~RawBuffer()
 {
     clear();
-
-    unsigned int bufferSize = numberOfFrames * numOfChannels;
-    if( bufferSize == 0 )
-        return false;
-
-    rawBufferSize = numberOfFrames;
-    numberOfChannels = numOfChannels;
-    rawFrames = QVector<type>(bufferSize, value);
-    rawBuffer = new moodycamel::ConcurrentQueue<type>(bufferSize,1,1);
-
-    return true;
 }
 
 /*
@@ -50,10 +29,32 @@ void RawBuffer<type>::clear()
     rawBufferSize = 0;
     numberOfChannels = 0;
     rawFrames = QVector<type>();
+    frames = QVector<double>();
     if( rawBuffer != NULL ) {
         delete rawBuffer;
         rawBuffer = NULL;
     }
+}
+
+/*
+ * Allocates numberOfFrames frames for each numOfChannels, assignes em with given value.
+ */
+template<class type>
+bool RawBuffer<type>::allocate(unsigned int numberOfFrames, unsigned int numOfChannels, double value)
+{
+    clear();
+
+    unsigned int bufferSize = numberOfFrames * numOfChannels;
+    if( bufferSize == 0 )
+        return false;
+
+    rawBufferSize = numberOfFrames;
+    numberOfChannels = numOfChannels;
+	frames = QVector<double>(bufferSize, value);
+    rawFrames = QVector<type>(bufferSize, (type)value);
+    rawBuffer = new moodycamel::ConcurrentQueue<type>(bufferSize,1,1);
+
+    return true;
 }
 
 /*
@@ -63,9 +64,10 @@ void RawBuffer<type>::clear()
  * Otherwise call popRawDataFromQueue afterwards manually.
  */
 template<class type>
-bool RawBuffer<type>::insert(type* frames, unsigned int size, bool dequeue)
+bool RawBuffer<type>::insert(void* theFrames, unsigned int size, bool dequeue)
 {
-    bool success = pushFramesToQueue(frames, size);
+    type* input = (type*)theFrames;
+    bool success = pushFramesToQueue(input, size);
     if( success && dequeue == true ) {
         success = success && grabFramesFromQueue();
     }
@@ -87,7 +89,7 @@ bool RawBuffer<type>::pushFramesToQueue(type* frames, unsigned int size)
 }
 
 /*
- * Thread save: Moves/pops frames from concurrent queue to
+ * Thread save: Moves/pops frames from concurrent queue into rawFrames vector
  */
 template<class type>
 bool RawBuffer<type>::grabFramesFromQueue()
@@ -108,5 +110,10 @@ bool RawBuffer<type>::grabFramesFromQueue()
             return false;
         }
     }
+
+    for(int i=0; i<rawFrames.size(); i++){
+        frames[i] = (double)rawFrames[i];
+    }
+
     return framesCopied > 0;
 }

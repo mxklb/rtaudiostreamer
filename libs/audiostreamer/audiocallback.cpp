@@ -24,11 +24,7 @@ int AudioCallback::interleaved( void *outputBuffer, void *inputBuffer, unsigned 
         return 1;
     }
 
-    // Get data type of raw frames and convert inputBuffer
-    typedef std::remove_reference<decltype(audioBuffer->rawBuffer.rawFrames[0])>::type audioFormat;
-    audioFormat *frames = (audioFormat*)inputBuffer;
-
-    if( !audioBuffer->rawBuffer.insert(frames, rawChannels*hwFrameCount) ) {
+    if( !audioBuffer->rawBuffer->insert(inputBuffer, rawChannels*hwFrameCount) ) {
         std::cerr << "Buffer overrun detected! @Streamtime: " << streamTime << std::endl;
     }
 

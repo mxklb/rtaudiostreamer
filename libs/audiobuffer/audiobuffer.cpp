@@ -1,15 +1,17 @@
 #include "audiobuffer.h"
 #include <QSettings>
 
+/*
+ * Constructor
+ */
 AudioBuffer::AudioBuffer()
 {
     frameCounter = 0;
     streamTimeStamp = 0.0;
-/*
-    QSettings settings;
-    unsigned int format = settings.value("audiostreamer/rtAudioFormat", 0x2).toUInt();
 
-    rawBuffer = new RawBuffer<signed short>();*/
+    QSettings settings;
+    unsigned int rawFormat = settings.value("audiostreamer/rtAudioFormat", (unsigned int)0x2).toUInt();
+    rawBuffer = RawBufferFactory::createBuffer(rawFormat);
 }
 
 /*
@@ -20,7 +22,7 @@ bool AudioBuffer::allocate(unsigned int ringBufferSize, QVector<unsigned int> ch
     unsigned int numOfRawChannels = 0;
     channels = RingBuffer::cleanChannels(channels);
     if( !channels.isEmpty() ) numOfRawChannels = channels.last() - channels.first() + 1;
-    bool rawBufferSuccess = rawBuffer.allocate(hwBufferSize, numOfRawChannels, value);
+    bool rawBufferSuccess = rawBuffer->allocate(hwBufferSize, numOfRawChannels, value);
     bool ringBufferSuccess = ringBuffer.allocate(ringBufferSize, channels, value);
     return rawBufferSuccess && ringBufferSuccess;
 }
@@ -30,7 +32,7 @@ bool AudioBuffer::allocate(unsigned int ringBufferSize, QVector<unsigned int> ch
  */
 unsigned int AudioBuffer::numberOfChannels(bool raw)
 {
-    if( raw ) return rawBuffer.numberOfChannels;
+    if( raw ) return rawBuffer->numberOfChannels;
     return ringBuffer.channelIds.size();
 }
 

@@ -5,7 +5,8 @@
 /*
  * Constructor
  */
-RingBuffer::RingBuffer() {
+RingBuffer::RingBuffer()
+{
     QSettings settings;
     allocate(settings.value("audiostreamer/processingBufferSize", 8192).toUInt());
 }
@@ -37,6 +38,32 @@ bool RingBuffer::allocate(unsigned int size, QVector<unsigned int> channels, dou
         }
     }
     return !bufferContainer.isEmpty();
+}
+
+/*
+ * Rotate/shift actual content numOfFrames. Afterwards set first numOfFrames values from rawData.
+ */
+bool RingBuffer::insert(QVector<double> *rawData, unsigned int numOfFrames, unsigned int rawChannelCount)
+{
+    unsigned int lowestChannelId = channelIds.first();
+    unsigned int numOfChannels = channelIds.size();
+    bool success = true;
+
+    if( !rotateRingbuffers(numOfFrames) ) {
+        numOfFrames = ringBufferSize;
+        success = false;
+    }
+
+    for( unsigned int ch=0; ch<numOfChannels; ch++ ) {
+        unsigned int channelId = channelIds.at(ch) - lowestChannelId;
+        QVector<double> *buffer = &bufferContainer[ch];
+        for( unsigned int i=0; i<numOfFrames; i++ ) {
+            int idx = i * rawChannelCount + channelId;
+            if( idx >= rawData->size() ) break;
+            (*buffer)[i] = rawData->at(idx);
+        }
+    }
+    return success;
 }
 
 /*
