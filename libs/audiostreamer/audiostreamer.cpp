@@ -24,7 +24,8 @@ AudioStreamer::AudioStreamer(QObject *parent) : QObject(parent)
     { error.printMessage(); }
 
     setupDeviceList();
-    allocateRingBuffers( getInputChannelIds(activeDeviceId), settings.value("audiostreamer/processingBufferSize", 8192).toUInt(), streamSettings.hwBufferSize );
+    unsigned int ringBufferSize = settings.value("audiostreamer/processingBufferSize", RingBuffer::defaultSize).toUInt();
+    allocateRingBuffers( getInputChannelIds(activeDeviceId), ringBufferSize, streamSettings.hwBufferSize );
 
     // Use signal from RtAudioCallback to trigger buffer update in main thread.
     connect(this, SIGNAL(audioCallbackFinished()), SLOT(slotUpdateBuffers()));
@@ -137,7 +138,6 @@ void AudioStreamer::setActiveDevice(unsigned int id, QVector<unsigned int> chann
 {
     stopStream();
     activeDeviceId = id;
-    //if( channels.isEmpty() ) channels = getInputChannelIds();
     allocateRingBuffers(channelIds, audioBuffer.ringBufferSize(), streamSettings.hwBufferSize);
 }
 
@@ -151,6 +151,27 @@ bool AudioStreamer::startStream(StreamSettings settings)
         return false;
     }
 
+    try {
+        if( rtAudio->isStreamRunning() || rtAudio->isStreamOpen() ) {
+            cout << "Warning: Stream could not be started, it's already running!" << endl;
+            return false;
+        }
+    }
+#ifdef RTERROR_H
+    catch( RtError &error )
+#else
+    catch( RtAudioError& error )
+#endif
+    { error.printMessage(); return false; }
+
+    // Check audio format and prepare raw buffer for streaming
+    if( audioBuffer.rawBuffer->rawAudioFormat != settings.audioFormat ) {
+        if( audioBuffer.switchRawAudioFormat(settings.audioFormat) == false ) {
+            cerr << "Error: Switch audio format " << settings.audioFormat << " failed!" << endl;
+            return false;
+        }
+    }
+
     streamSettings = settings;
     audioProcessing.streamSettings = settings;
 
@@ -161,7 +182,8 @@ bool AudioStreamer::startStream(StreamSettings settings)
 
     double msInBuffer = 1000. * audioBuffer.ringBufferSize() / (double)settings.hwSampleRate;
 
-    cout << "Starting streaming " << parameters.nChannels << " channels for device [" << activeDeviceId << "], buffer " << audioBuffer.ringBufferSize() << " / " << msInBuffer << " [ms]" << endl;
+    cout << "Starting streaming " << parameters.nChannels << " channels for device [" << activeDeviceId
+         << "], buffer " << audioBuffer.ringBufferSize() << " / " << msInBuffer << " [ms]" << endl;
     cout << " - Active input channels: ";
     foreach (unsigned int id, audioBuffer.ringBuffer.channelIds) cout << "Ch" << id << " ";
     cout << endl;

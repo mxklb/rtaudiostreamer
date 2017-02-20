@@ -5,8 +5,9 @@
  * Constructor
  */
 template<class type>
-RawBuffer<type>::RawBuffer()
+RawBuffer<type>::RawBuffer(unsigned int format)
 {
+    rawAudioFormat = format;
     rawBuffer = NULL;
     clear();
 }

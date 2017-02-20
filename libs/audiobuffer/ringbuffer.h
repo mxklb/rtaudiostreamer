@@ -10,6 +10,7 @@ public:
     unsigned int ringBufferSize;
     QVector<unsigned int> channelIds;
     QVector<QVector<double> > bufferContainer;
+    static const unsigned int defaultSize = 8192;
 
     bool allocate(unsigned int size, QVector<unsigned int> channels = QVector<unsigned int>(), double value = 0.0);
     bool insert(QVector<double> *rawData, unsigned int numOfFrames, unsigned int rawChannelCount);

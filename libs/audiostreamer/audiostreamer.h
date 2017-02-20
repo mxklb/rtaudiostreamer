@@ -58,7 +58,9 @@ private:
     AudioProcessing audioProcessing;
 
     void setupDeviceList();
-    void allocateRingBuffers(QVector<unsigned int> channels, unsigned int size = 8192, unsigned int hwBufferSize = 256);
+    void allocateRingBuffers(QVector<unsigned int> channels,
+                             unsigned int size = RingBuffer::defaultSize,
+                             unsigned int hwBufferSize = RawBufferBase::defaultSize);
 };
 
 #endif // AUDIOSTREAMER_H

@@ -16,8 +16,9 @@ public:
     RawBufferBase *rawBuffer;
 
     bool allocate(unsigned int ringBufferSize, QVector<unsigned int> channels = QVector<unsigned int>(),
-                  unsigned int hwBufferSize = 256, double value = 0.0);
+                  unsigned int hwBufferSize = RawBufferBase::defaultSize, double value = 0.0);
 
+    bool switchRawAudioFormat(unsigned int format);
     unsigned int numberOfChannels(bool raw = false);
     unsigned int ringBufferSize() { return ringBuffer.ringBufferSize; }
     unsigned int rawBufferSize() { return rawBuffer->rawBufferSize; }

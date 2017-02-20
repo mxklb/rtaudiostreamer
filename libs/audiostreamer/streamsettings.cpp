@@ -1,4 +1,5 @@
 #include "streamsettings.h"
+#include "rawbuffer.h"
 #include <QSettings>
 #include <limits>
 
@@ -6,12 +7,12 @@ StreamSettings::StreamSettings()
 {
     QSettings settings;
     hwSampleRate = settings.value("audiostreamer/hwSampleRate", 44100).toUInt();
-    hwBufferSize = settings.value("audiostreamer/hwBufferSize", 256).toUInt();
+    hwBufferSize = settings.value("audiostreamer/hwBufferSize", RawBufferBase::defaultSize).toUInt();
 	audioFormat = settings.value("audiostreamer/rtAudioFormat", (unsigned int)0x2).toUInt();
     options.numberOfBuffers = settings.value("audiostreamer/rtNumberOfBuffers", 0).toUInt();
     options.priority = settings.value("audiostreamer/rtPriority", 0).toUInt();
     options.flags = settings.value("audiostreamer/rtAudioOptionFlags", 0).toUInt();
-    options.streamName = "RtAudioStreamer";
+    options.streamName = settings.applicationName().toStdString();
 }
 
 /*
