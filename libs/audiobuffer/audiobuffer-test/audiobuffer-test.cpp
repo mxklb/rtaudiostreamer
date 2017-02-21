@@ -2,6 +2,50 @@
 #include "catch.hpp"
 #include "audiobuffer.h"
 
+// Initialize vector of interleaved frames from 0..hwBufferSize for each channel.
+template <typename type>
+type* initFrames(unsigned int numOfChannels, unsigned int hwBufferSize) {
+    type* frames = new type[numOfChannels*hwBufferSize];
+    for( unsigned int ch=0; ch<numOfChannels; ch++ ) {
+        for( unsigned int i=0; i<hwBufferSize; i++ ) {
+            frames[i*ch + ch] = i;
+        }
+    }
+    return frames;
+}
+
+// Initializes a void* buffer of given format and size
+void* initTestBuffer(unsigned int format, unsigned int numOfChannels, unsigned int hwBufferSize)
+{
+    void* frames = NULL;
+    switch( format ) {
+        case 0x1: { qint8 *f1 = initFrames<qint8>(numOfChannels,hwBufferSize); frames = (void*)f1; break; }
+        case 0x2: { qint16 *f1 = initFrames<qint16>(numOfChannels,hwBufferSize); frames = (void*)f1; break; }
+        case 0x8: { qint32 *f1 = initFrames<qint32>(numOfChannels,hwBufferSize); frames = (void*)f1; break; }
+        case 0x10: { float *f1 = initFrames<float>(numOfChannels,hwBufferSize); frames = (void*)f1; break; }
+        case 0x20: { double *f1 = initFrames<double>(numOfChannels,hwBufferSize); frames = (void*)f1; break; }
+        default: { qint16 *f1 = initFrames<qint16>(numOfChannels,hwBufferSize); frames = (void*)f1; break; }
+    }
+    return frames;
+}
+
+// Returns true when casted void pointer (frames) contains same values than first N of buffers raw frames
+bool testChannelInsertion(AudioBuffer* buffer, unsigned int format, void* frames, unsigned int numOfRawChannels, unsigned int N = 2)
+{
+    bool success = true;
+    for( unsigned int i=0; i<numOfRawChannels*N; i++ ) {
+        switch( format ) {
+            case 0x1: { success = success && buffer->rawBuffer->frames[i] == ((qint8*)frames)[i]; break; }
+            case 0x2: { success = success && buffer->rawBuffer->frames[i] == ((qint16*)frames)[i]; break; }
+            case 0x8: { success = success && buffer->rawBuffer->frames[i] == ((qint32*)frames)[i]; break; }
+            case 0x10: { success = success && buffer->rawBuffer->frames[i] == ((float*)frames)[i]; break; }
+            case 0x20: { success = success && buffer->rawBuffer->frames[i] == ((double*)frames)[i]; break; }
+            default: { success = success && buffer->rawBuffer->frames[i] == ((qint16*)frames)[i]; break; }
+        }
+    }
+    return success;
+}
+
 TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
 {
     AudioBuffer* buffer = new AudioBuffer();
@@ -74,24 +118,21 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
         REQUIRE(numOfRawChannels == channels.last() - channels.first() + 1);
         REQUIRE(buffer->rawBuffer->frames.size() == numOfFrames);
 
-        // Setup frames array/vector
-        QVector<qint16> frames = QVector<qint16>(numOfFrames, -10);
-        for( unsigned int ch=0; ch<numOfRawChannels; ch++ ) {
-            for( unsigned int i=0; i<hwBufferSize; i++ ) {
-                frames[i*ch + ch] = i;
-            }
+        // Testing all supported audio formats
+        QVector<unsigned int> formats({0x1, 0x2, 0x8, 0x10, 0x20});
+        foreach (unsigned int format, formats) {
+            void* frames = initTestBuffer(format, numOfRawChannels, hwBufferSize);
+
+            REQUIRE(buffer->switchRawAudioFormat(format));
+
+            // Test raw buffer insert operation
+            REQUIRE(buffer->rawBuffer->insert(frames, numOfFrames, true));
+            REQUIRE(testChannelInsertion(buffer, format, frames, numOfRawChannels));
+
+            // Check reducing frame count to push (once)
+            if( format == formats.first() )
+                REQUIRE(buffer->rawBuffer->insert(frames, numOfFrames*2));
         }
-
-        // Test raw buffer insert operation
-        REQUIRE(buffer->rawBuffer->insert((void*)frames.data(), numOfFrames, true));
-
-        // Check first two frames from each channel
-        for( unsigned int i=0; i<numOfRawChannels*2; i++ ) {
-            REQUIRE(buffer->rawBuffer->frames[i] == frames[i] );
-        }
-
-        // Check reducing frame count to push
-        REQUIRE(buffer->rawBuffer->insert((void*)frames.data(), numOfFrames*2));
     }
     delete buffer;
 }
