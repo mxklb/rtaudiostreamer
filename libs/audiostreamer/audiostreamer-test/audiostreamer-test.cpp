@@ -57,10 +57,12 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" )
         REQUIRE(streamer->getGrabbingBuffer() != NULL);
 
         if( !streamer->getListOfDevices().isEmpty() ) {
-            // Start streaming
-            if( streamer->startStream() ) {
+            StreamSettings settings;
+            settings.audioFormat = 0x8;
+            // Start streaming with given settings
+            if( streamer->startStream(settings) ) {
                 usleep(200);
-                REQUIRE(streamer->stopStream() == true);
+                REQUIRE(streamer->stopStream() == true);                
             } else {
                 WARN("Streaming failed: RtAudio can't start stream!");
             }

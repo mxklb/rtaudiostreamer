@@ -4,7 +4,8 @@
 
 // Initialize vector of interleaved frames from 0..hwBufferSize for each channel.
 template <typename type>
-type* initFrames(unsigned int numOfChannels, unsigned int hwBufferSize) {
+type* initFrames(unsigned int numOfChannels, unsigned int hwBufferSize)
+{
     type* frames = new type[numOfChannels*hwBufferSize];
     for( unsigned int ch=0; ch<numOfChannels; ch++ ) {
         for( unsigned int i=0; i<hwBufferSize; i++ ) {
@@ -106,7 +107,8 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
         REQUIRE_FALSE(buffer->ringBuffer.insert(&buffer->rawBuffer->frames, buffer->ringBufferSize()*2, buffer->numberOfChannels(true)));
     }
 
-    SECTION("Raw Buffer") {
+    SECTION("Raw Buffer")
+    {
         unsigned int hwBufferSize = 128;
         QVector<unsigned int> channels({1,3,5});
         REQUIRE(buffer->allocate(1024, channels, hwBufferSize));
@@ -118,11 +120,11 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
         REQUIRE(numOfRawChannels == channels.last() - channels.first() + 1);
         REQUIRE(buffer->rawBuffer->frames.size() == numOfFrames);
 
-        // Testing all supported audio formats
-        QVector<unsigned int> formats({0x1, 0x2, 0x8, 0x10, 0x20});
-        foreach (unsigned int format, formats) {
+        // Testing all supported audio formats + unknown 0x33
+        QVector<unsigned int> formats({0x1, 0x2, 0x8, 0x10, 0x20, 0x33});
+        foreach (unsigned int format, formats)
+        {
             void* frames = initTestBuffer(format, numOfRawChannels, hwBufferSize);
-
             REQUIRE(buffer->switchRawAudioFormat(format));
 
             // Test raw buffer insert operation
