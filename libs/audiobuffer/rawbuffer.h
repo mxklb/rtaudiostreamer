@@ -13,7 +13,6 @@ public:
     unsigned int rawBufferSize;
     unsigned int numberOfChannels;
     unsigned int rawAudioFormat;
-    static const unsigned int defaultSize = 256;
 
     virtual bool allocate(unsigned int size, unsigned int numOfChannels, double value = 0) = 0;
     virtual bool insert(void* data, unsigned int size, bool dequeue = false) = 0;

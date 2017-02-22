@@ -24,7 +24,7 @@ AudioStreamer::AudioStreamer(QObject *parent) : QObject(parent)
     { error.printMessage(); }
 
     setupDeviceList();
-    unsigned int ringBufferSize = settings.value("audiostreamer/processingBufferSize", RingBuffer::defaultSize).toUInt();
+    unsigned int ringBufferSize = settings.value("audiostreamer/processingBufferSize", bufferdefaults::ringBufferSize).toUInt();
     allocateRingBuffers( getInputChannelIds(activeDeviceId), ringBufferSize, streamSettings.hwBufferSize );
 
     // Use signal from RtAudioCallback to trigger buffer update in main thread.
@@ -118,9 +118,9 @@ unsigned int AudioStreamer::numberOfInputChannels(int deviceId)
 /*
  * Allocates ringbuffers for aquisition and processing of each channel for the active device.
  */
-void AudioStreamer::allocateRingBuffers(QVector<unsigned int> channels, unsigned int ringBufferSize, unsigned int hwBufferSize)
+bool AudioStreamer::allocateRingBuffers(QVector<unsigned int> listOfChannelIds, unsigned int ringBufferSize, unsigned int hwBufferSize)
 {
-    audioBuffer.allocate(ringBufferSize, channels, hwBufferSize);
+    return audioBuffer.allocate(ringBufferSize, listOfChannelIds, hwBufferSize);
 }
 
 /*
@@ -164,9 +164,11 @@ bool AudioStreamer::startStream(StreamSettings settings)
 #endif
     { error.printMessage(); return false; }
 
-    // Check audio format and prepare raw buffer for streaming
-    if( audioBuffer.rawBuffer->rawAudioFormat != settings.audioFormat ) {
-        if( audioBuffer.switchRawAudioFormat(settings.audioFormat) == false ) {
+    // Check audio buffer settings and prepare raw buffer for streaming
+    if( audioBuffer.rawBuffer->rawAudioFormat != settings.audioFormat ||
+        audioBuffer.rawBuffer->rawBufferSize != settings.hwBufferSize )
+    {
+        if( audioBuffer.prepareRawBuffer(settings.audioFormat, settings.hwBufferSize) == false ) {
             cerr << "Error: Switch audio format " << settings.audioFormat << " failed!" << endl;
             return false;
         }

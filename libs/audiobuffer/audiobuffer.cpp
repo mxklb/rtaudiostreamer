@@ -30,16 +30,15 @@ bool AudioBuffer::allocate(unsigned int ringBufferSize, QVector<unsigned int> ch
 /*
  * Switch the used audio format type. Recreates and reallocates the rawBuffer.
  */
-bool AudioBuffer::switchRawAudioFormat(unsigned int format)
+bool AudioBuffer::prepareRawBuffer(unsigned int format, unsigned int hwBufferLength)
 {
-    unsigned int hwBufferSize = rawBuffer->rawBufferSize;
     unsigned int bufferSize = ringBufferSize();
     QVector<unsigned int> channels = ringBuffer.channelIds;
 
     if( rawBuffer ) delete rawBuffer;
     rawBuffer = RawBufferFactory::createBuffer(format);
 
-    return allocate(bufferSize, channels, hwBufferSize);
+    return allocate(bufferSize, channels, hwBufferLength);
 }
 
 /*

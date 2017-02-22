@@ -5,7 +5,8 @@ include(audiobuffer.pri)
 
 HEADERS += audiobuffer.h \
     rawbuffer.h \
-    ringbuffer.h
+    ringbuffer.h \
+    bufferdefaults.h
 SOURCES += audiobuffer.cpp \
     rawbuffer.cpp \
     ringbuffer.cpp

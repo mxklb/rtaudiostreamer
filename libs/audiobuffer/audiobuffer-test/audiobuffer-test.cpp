@@ -125,7 +125,7 @@ TEST_CASE( "AudioBuffer", "[AudioBuffer]" )
         foreach (unsigned int format, formats)
         {
             void* frames = initTestBuffer(format, numOfRawChannels, hwBufferSize);
-            REQUIRE(buffer->switchRawAudioFormat(format));
+            REQUIRE(buffer->prepareRawBuffer(format, hwBufferSize));
 
             // Test raw buffer insert operation
             REQUIRE(buffer->rawBuffer->insert(frames, numOfFrames, true));

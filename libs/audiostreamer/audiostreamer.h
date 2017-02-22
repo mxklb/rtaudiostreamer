@@ -32,8 +32,8 @@ public:
     bool stopStream();
 
 protected:
-    AudioBuffer* getAudioBuffer() { return &audioBuffer; }
-    void callbackFinished() { emit audioCallbackFinished(); }
+    inline AudioBuffer* getAudioBuffer() { return &audioBuffer; }
+    inline void callbackFinished() { emit audioCallbackFinished(); }
     bool processLatestAudio();
 
 protected slots:
@@ -58,9 +58,9 @@ private:
     AudioProcessing audioProcessing;
 
     void setupDeviceList();
-    void allocateRingBuffers(QVector<unsigned int> channels,
-                             unsigned int size = RingBuffer::defaultSize,
-                             unsigned int hwBufferSize = RawBufferBase::defaultSize);
+    bool allocateRingBuffers(QVector<unsigned int> listOfchannelIds,
+                             unsigned int ringBufferSize = bufferdefaults::ringBufferSize,
+                             unsigned int hwBufferSize = bufferdefaults::hwBufferSize);
 };
 
 #endif // AUDIOSTREAMER_H

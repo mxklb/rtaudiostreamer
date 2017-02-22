@@ -8,7 +8,7 @@
 RingBuffer::RingBuffer()
 {
     QSettings settings;
-    allocate(settings.value("audiostreamer/processingBufferSize", defaultSize).toUInt());
+    allocate(settings.value("audiostreamer/processingBufferSize", bufferdefaults::ringBufferSize).toUInt());
 }
 
 /*

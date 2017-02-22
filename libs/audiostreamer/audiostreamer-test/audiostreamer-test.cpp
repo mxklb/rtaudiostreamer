@@ -59,6 +59,7 @@ TEST_CASE( "AudioStreamer", "[RtAudio]" )
         if( !streamer->getListOfDevices().isEmpty() ) {
             StreamSettings settings;
             settings.audioFormat = 0x8;
+            settings.hwBufferSize = 512;
             // Start streaming with given settings
             if( streamer->startStream(settings) ) {
                 usleep(200);
