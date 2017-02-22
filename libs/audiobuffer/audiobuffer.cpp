@@ -15,6 +15,14 @@ AudioBuffer::AudioBuffer()
 }
 
 /*
+ * Destructor
+ */
+AudioBuffer::~AudioBuffer()
+{
+    if( rawBuffer ) delete rawBuffer;
+}
+
+/*
  * Allocates 'ringBufferSize' length ringbuffers and 'hwBufferSize' length raw buffer for each given channel.
  */
 bool AudioBuffer::allocate(unsigned int ringBufferSize, QVector<unsigned int> channels, unsigned int hwBufferSize, double value)

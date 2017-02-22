@@ -238,6 +238,22 @@ bool AudioStreamer::stopStream()
 }
 
 /*
+ * Returns a reference to the audio buffer.
+ */
+AudioBuffer* AudioStreamer::getAudioBuffer()
+{
+    return &audioBuffer;
+}
+
+/*
+ * Triggers audio callback finished signal.
+ */
+void AudioStreamer::callbackFinished()
+{
+    emit audioCallbackFinished();
+}
+
+/*
  * Refreshes processing buffer, copying actual content of the aquisition buffer and trigger processing.
  * Note: This is called high frequently -> triggered always after each audio callback has finished.
  */

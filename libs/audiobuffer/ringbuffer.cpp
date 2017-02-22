@@ -12,6 +12,14 @@ RingBuffer::RingBuffer()
 }
 
 /*
+ * Destructor
+ */
+RingBuffer::~RingBuffer()
+{
+    bufferContainer.clear();
+}
+
+/*
  * Sorts and removes dublicate entries in the given vector and returns it cleaned.
  */
 QVector<unsigned int> RingBuffer::cleanChannels(QVector<unsigned int> channels)

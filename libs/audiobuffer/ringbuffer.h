@@ -7,6 +7,7 @@
 class RingBuffer {
 public:
     RingBuffer();
+    ~RingBuffer();
 
     unsigned int ringBufferSize;
     QVector<unsigned int> channelIds;

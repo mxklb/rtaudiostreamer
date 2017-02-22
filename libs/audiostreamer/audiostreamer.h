@@ -32,17 +32,16 @@ public:
     bool stopStream();
 
 protected:
-    inline AudioBuffer* getAudioBuffer() { return &audioBuffer; }
-    inline void callbackFinished() { emit audioCallbackFinished(); }
+    void callbackFinished();
     bool processLatestAudio();
+    AudioBuffer* getAudioBuffer();
 
 protected slots:
     void slotUpdateBuffers();
 
 signals:
-    void triggerAudioProcessing();
-    void rawBufferChanged(AudioBuffer* buffer);
     void audioCallbackFinished();
+    void rawBufferChanged(AudioBuffer* buffer);
 
 protected:
     QElapsedTimer processingIntervalTimer;

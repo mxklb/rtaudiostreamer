@@ -8,6 +8,7 @@
 class AudioBuffer {
 public:
     AudioBuffer();
+    ~AudioBuffer();
 
     double streamTimeStamp;
     unsigned long frameCounter;
