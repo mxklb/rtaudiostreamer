@@ -1,6 +1,10 @@
 stages:
 - build
 
+before_script:
+- apt-get update -y
+- apt-get install -y qt5-qmake
+
 build_main:
   stage: build
   script:
