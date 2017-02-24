@@ -6,7 +6,4 @@ build_main:
   script:
     - qmake RtAudioStreamer.pro -r CONFIG+=debug
     - make
-  tags:
-    - qt
-    - c++
     
