@@ -3,7 +3,7 @@ stages:
 
 before_script:
 - apt-get update -y
-- apt-get install -y qt5-qmake
+- apt-get install -y qt5-default qt5-qmake catch gdb librtaudio-dev
 
 build_main:
   stage: build
