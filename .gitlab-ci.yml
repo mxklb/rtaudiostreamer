@@ -9,19 +9,20 @@ build:
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   # before_script: 
-  #   - apt update && apt -y install make autoconf 
+    - apt update && apt -y install qt5-default qt5-qmake catch gdb librtaudio-dev 
   script: 
-    - g++ helloworld.cpp -o mybinary
-  artifacts:
-    paths:
-      - mybinary
+    - qmake RtAudioStreamer.pro -r CONFIG+=debug
+    - make
+  #artifacts:
+  #  paths:
+  #    - mybinary
   # depending on your build setup it's most likely a good idea to cache outputs to reduce the build time
   # cache:
   #   paths:
   #     - "*.o"
 
 # run tests using the binary built before
-test:
-  stage: test
-  script:
-    - ./runmytests.sh
+#test:
+#  stage: test
+#  script:
+#    - ./runmytests.sh
