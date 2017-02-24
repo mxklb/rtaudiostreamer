@@ -4,6 +4,7 @@ stages:
 before_script:
 - apt-get update -y
 - apt-get install -y qt5-default qt5-qmake catch gdb librtaudio-dev
+- git submodule update --init --recursive
 
 build_main:
   stage: build
