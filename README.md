@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/mxklb/rtaudiostreamer.svg?branch=master)](https://travis-ci.org/mxklb/rtaudiostreamer)
 [![build status](https://gitlab.com/mxklb/rtaudiostreamer/badges/master/build.svg)](https://gitlab.com/mxklb/rtaudiostreamer/commits/master)
 [![codecov](https://codecov.io/gh/mxklb/rtaudiostreamer/branch/master/graph/badge.svg)](https://codecov.io/gh/mxklb/rtaudiostreamer)
+[![codecov](https://codecov.io/gl/mxklb/rtaudiostreamer/branch/master/graph/badge.svg?token=orhkNtd8NC)](https://codecov.io/gl/mxklb/rtaudiostreamer)
+
 
 This is a Qt C++ app which uses RtAudio API to process real time audio streams from connected audio hardware. This is an example project how to use RtAudioAPI for multi OS audio / soundcard monitoring.
 
