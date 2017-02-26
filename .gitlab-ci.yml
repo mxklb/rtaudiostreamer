@@ -11,4 +11,5 @@ build_main:
   script:
     - qmake RtAudioStreamer.pro -r CONFIG+=debug
     - make
+    - bash <(curl -s https://codecov.io/bash)
     
