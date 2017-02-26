@@ -11,5 +11,5 @@ build_main:
   script:
     - qmake RtAudioStreamer.pro -r CONFIG+=debug
     - make
-    - bash <(curl -s https://codecov.io/bash) -t CODECOV_TOKEN
+    - bash <(curl -s https://codecov.io/bash) -t 82402abb-aa43-4fa9-bafc-5048ac94527b
     
