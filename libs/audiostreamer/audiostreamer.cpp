@@ -1,6 +1,7 @@
 #include "audiostreamer.h"
 #include "audiocallback.h"
 #include <QSettings>
+#include <QtDebug>
 
 using namespace std;
 
@@ -74,14 +75,18 @@ QList<RtAudio::DeviceInfo> AudioStreamer::getListOfDevices()
  */
 void AudioStreamer::printListOfDevices()
 {
+    QString prefix("-");
     int index = 0;
+    cout << "\nDetected " << devices.size() << " audio devices:" << endl;
     foreach (RtAudio::DeviceInfo info, devices) {
-        cout << (int)info.isDefaultInput << " [" << index++ << "] " << info.name;
-        cout << ": max outputs = " << info.outputChannels << " ";
-        cout << ": max inputs = " << info.inputChannels << " ";
-        cout << ": dup chCount = " << info.duplexChannels << "\n";
+        QString dot = prefix;
+        if( info.isDefaultInput ) dot = "*";
+        cout << dot.toStdString() << " Device " << index++ << " - " << info.name;
+        cout << " - Outputs " << info.outputChannels << ",";
+        cout << " Inputs " << info.inputChannels << ",";
+        cout << " Duplex " << info.duplexChannels << "\n";
         std::vector<unsigned int> sampleRates = info.sampleRates;
-        cout << "  SR [kHz]: ";
+        cout << "  Sample Rates [kHz] = ";
         for( unsigned int j=0; j<sampleRates.size(); j++ ) {
             cout << sampleRates[j] << ", ";
         }
@@ -147,13 +152,13 @@ void AudioStreamer::setActiveDevice(unsigned int id, QVector<unsigned int> chann
 bool AudioStreamer::startStream(StreamSettings settings)
 {
     if( audioBuffer.numberOfChannels() == 0 ) {
-        cout << "Warning: Unable to start stream without input channels!" << endl;
+        qWarning() << "Unable to start stream without input channels!" << endl;
         return false;
     }
 
     try {
         if( rtAudio->isStreamRunning() || rtAudio->isStreamOpen() ) {
-            cout << "Warning: Stream could not be started, it's already running!" << endl;
+            qWarning() << "Stream could not be started, it's already running!" << endl;
             return false;
         }
     }
@@ -169,7 +174,7 @@ bool AudioStreamer::startStream(StreamSettings settings)
         audioBuffer.rawBuffer->rawBufferSize != settings.hwBufferSize )
     {
         if( audioBuffer.prepareRawBuffer(settings.audioFormat, settings.hwBufferSize) == false ) {
-            cerr << "Error: Switch audio format " << settings.audioFormat << " failed!" << endl;
+            qCritical() << "Switch audio format" << settings.audioFormat << "failed!" << endl;
             return false;
         }
     }
@@ -184,11 +189,13 @@ bool AudioStreamer::startStream(StreamSettings settings)
 
     double msInBuffer = 1000. * audioBuffer.ringBufferSize() / (double)settings.hwSampleRate;
 
-    cout << "Starting streaming " << parameters.nChannels << " channels for device [" << activeDeviceId
-         << "], buffer " << audioBuffer.ringBufferSize() << " / " << msInBuffer << " [ms]" << endl;
-    cout << " - Active input channels: ";
-    foreach (unsigned int id, audioBuffer.ringBuffer.channelIds) cout << "Ch" << id << " ";
-    cout << endl;
+    cout << "\nStreaming " << parameters.nChannels << " channels of device " << activeDeviceId
+         << " with " << settings.hwSampleRate << " kHz and " << settings.hwBufferSize << " frames buffer" << endl;
+    cout << " - Processing interval " << processingInterval << " [ms] using latest " << audioBuffer.ringBufferSize()
+         << " frames = " << msInBuffer << " [ms]" << endl;
+    cout << " - Active input channel ids: [ ";
+    foreach (unsigned int id, audioBuffer.ringBuffer.channelIds) cout << id << " ";
+    cout << "]" << endl;
 
     try {
         rtAudio->openStream(NULL, &parameters,
@@ -266,7 +273,7 @@ void AudioStreamer::slotUpdateBuffers()
             audioProcessing.slotUpdateRingBuffer(&audioBuffer);
             processLatestAudio();
         }
-        else { cerr << "Warning: Detected missing frames .." << endl; }
+        else { qWarning() << "Detected missing frames .." << endl; }
     }
 }
 

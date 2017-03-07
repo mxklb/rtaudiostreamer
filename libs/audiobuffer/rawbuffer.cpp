@@ -1,5 +1,5 @@
 #include "rawbuffer.h"
-#include <iostream>
+#include <QtDebug>
 
 /*
  * Constructor
@@ -83,7 +83,7 @@ bool RawBuffer<type>::pushFramesToQueue(type* frames, unsigned int size)
 {
     unsigned int numOfFrames = rawBufferSize*numberOfChannels;
     if( size > numOfFrames ) {
-        std::cerr << "Warning: Reducing data to push from " << size << " to " << numOfFrames << std::endl;
+        qWarning() << "Reducing data to push from " << size << " to " << numOfFrames;
         size = numOfFrames;
     }
     return rawBuffer->enqueue_bulk(frames, size);
@@ -107,7 +107,7 @@ bool RawBuffer<type>::grabFramesFromQueue()
         else break;
 
         if( retryCounter > 10 ) {
-            std::cerr << "try_dequeue_bulk failed, missing " << missingFrames << "/" << rawFrames.size() << std::endl;
+            qWarning() << "try_dequeue_bulk failed, missing " << missingFrames << "/" << rawFrames.size();
             return false;
         }
     }
