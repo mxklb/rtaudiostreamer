@@ -1,5 +1,6 @@
 # RtAudioStreamer
 
+[![GitLab license](https://img.shields.io/badge/license-MIT-blue.svg)](https://gitlab.com/mxklb/rtaudiostreamer/blob/master/LICENSE)
 [![Build Status](https://travis-ci.org/mxklb/rtaudiostreamer.svg?branch=master)](https://travis-ci.org/mxklb/rtaudiostreamer)
 [![codecov](https://codecov.io/gh/mxklb/rtaudiostreamer/branch/master/graph/badge.svg)](https://codecov.io/gh/mxklb/rtaudiostreamer)
 [![build status](https://gitlab.com/mxklb/rtaudiostreamer/badges/master/build.svg)](https://gitlab.com/mxklb/rtaudiostreamer/commits/master)
