@@ -42,13 +42,24 @@ void AudioProcessing::slotUpdateRingBuffer(AudioBuffer *buffer)
 void AudioProcessing::slotAudioProcessing()
 {
     // todo: Here should be dynamic channel processing pipline ..
+    printAmplitudes( absoluteAmplitudes(&audioBuffer, streamSettings.formatLimit()) );
+}
 
-    QList<double> amplitudes = absoluteAmplitudes(&audioBuffer, streamSettings.formatLimit());
+/*
+ * Prints the given amplitudes to the std out using carrige return.
+ *
+ * Additionally always prints some streaming parameters. Expected output:
+ *
+ *   time-stamp [frame number / buffer number] | channel i: amplitude [log10(amplitude)] | channel 1+1: ..
+ */
+void AudioProcessing::printAmplitudes(QList<double> amplitudes)
+{
     QList<double> loudness = logAmplitudes(amplitudes);
 
     // Just print some results to the terminal ..
+    //cerr << "\r";
     cerr << setprecision(2) << audioBuffer.streamTimeStamp << " [frame "
-         << audioBuffer.frameCounter << " / buffer " << audioBuffer.frameCounter / audioBuffer.ringBufferSize() << "]\t";
+         << audioBuffer.frameCounter << " / buffer " << audioBuffer.frameCounter / audioBuffer.ringBufferSize() << "] ";
     for( unsigned int ch=0; ch<audioBuffer.numberOfChannels(); ch++ ) {
         unsigned int channel = audioBuffer.ringBuffer.channelIds.at(ch);
         cerr << " | Ch" << channel << ": " << setiosflags(ios::fixed) << setprecision(7)
@@ -72,7 +83,6 @@ QList<double> AudioProcessing::absoluteAmplitudes(AudioBuffer *buffer, double no
 
     RingBuffer *ringBuffer = &buffer->ringBuffer;
     for( int ch=0; ch<numOfChannels; ch++ ) {
-        // todo: get normalize factor from used rtaudio data type ...
         amplitudes[ch] += accumulate(ringBuffer->bufferContainer.at(ch), normalize);
     }
 

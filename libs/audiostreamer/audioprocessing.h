@@ -25,6 +25,8 @@ public slots:
 private:
     AudioBuffer audioBuffer;
     static double silenceGate;
+
+    void printAmplitudes(QList<double> amplitudes);
 };
 
 #endif // AUDIOPROCESSING_H
