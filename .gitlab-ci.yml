@@ -27,6 +27,7 @@ deploy_debian:
   stage: deploy
   only:
     - master
+  script:
     - export USER="mxklb"
     - chmod +x pkgs/debian.sh
     - pkgs/debian.sh
