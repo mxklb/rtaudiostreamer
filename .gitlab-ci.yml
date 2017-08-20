@@ -6,7 +6,7 @@ stages:
 
 before_script:
 - apt-get update -y
-- apt-get install -y catch gdb gcovr librtaudio-dev
+- apt-get install -y catch gdb gcovr librtaudio-dev git
 - git submodule update --init --recursive
 
 debug_tests:
