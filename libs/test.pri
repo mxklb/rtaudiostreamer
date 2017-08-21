@@ -7,7 +7,7 @@ CONFIG += c++11
 
 # Set catch header include path
 !exists(/usr/include/catch.hpp) {
-    INCLUDEPATH += $$PROJECT_DIR/libs/extern/catch
+    INCLUDEPATH += $$PWD/extern/catch
 }
 
 # Trigger execution of the test target

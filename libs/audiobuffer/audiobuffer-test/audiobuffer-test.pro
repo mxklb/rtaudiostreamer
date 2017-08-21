@@ -1,10 +1,11 @@
 TARGET = audiobuffer-test
 SOURCES += audiobuffer-test.cpp
 
-include($$PROJECT_DIR/libs/test.pri)
+# Declare this as test app
+include(../../test.pri)
 
 # Relative path to libs
 customLibs = ../audiobuffer
 
 # Load and link all libs
-include($$PROJECT_DIR/libs/loadlibs.pri)
+include(../../loadlibs.pri)

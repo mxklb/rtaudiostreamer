@@ -4,11 +4,12 @@ SOURCES += \
     audiocallback-test.cpp \
     audioprocessing-test.cpp
 
-include($$PROJECT_DIR/libs/test.pri)
+# Declare this as test app
+include(../../test.pri)
 
 # Relative path to libs
 customLibs = ../../audiobuffer/audiobuffer
 customLibs += ../../audiostreamer/audiostreamer
 
 # Load and link all libs
-include($$PROJECT_DIR/libs/loadlibs.pri)
+include(../../loadlibs.pri)

@@ -2,4 +2,4 @@ app/RtAudioStreamer usr/bin
 libs/**/lib*.so usr/lib
 libs/**/lib*.so.* usr/lib
 img/RtAudioStreamer.svg usr/share/pixmaps
-RtAudioStreamer.desktop usr/share/applications
+rtaudiostreamer.desktop usr/share/applications

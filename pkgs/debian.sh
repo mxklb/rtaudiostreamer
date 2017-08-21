@@ -19,15 +19,18 @@ mkdir deb/$pkgname-$version/img
 cp -r ../app/* deb/$pkgname-$version/app
 cp -r ../libs/* deb/$pkgname-$version/libs
 cp -r ../img/* deb/$pkgname-$version/img
-cp ../.qmake.conf deb/$pkgname-$version
+cp ../globals.pri deb/$pkgname-$version
 cp ../alltests.pri deb/$pkgname-$version
 cp ../RtAudioStreamer.pro deb/$pkgname-$version
 
 # Copy other files (some desktop config)
-cp deb/app/RtAudioStreamer.desktop deb/$pkgname-$version/$pkgname-$majver.desktop
+cp deb/app/RtAudioStreamer.desktop deb/$pkgname-$version/$pkgname.desktop
 
 # Go into build directory
 cd deb/$pkgname-$version
+
+# Configure build without tests
+sed -i '1s/.*/catchTests=false/' globals.pri
 
 # Initialize debian configurations
 dh_make --createorig --yes --single --email dev@xamblak.de --copyright mit
@@ -40,7 +43,7 @@ cp ../app/rules debian
 cp ../app/dirs debian
 
 # Write source/package version info into the control file
-sed -i '2s/.*/Version='$majver'/' $pkgname-$majver.desktop
+sed -i '2s/.*/Version='$majver'/' $pkgname.desktop
 sed -i '1s/.*/Source: '$pkgname'-'$majver'/' debian/control
 sed -i '11s/.*/Package: '$pkgname'-'$majver'/' debian/control
 

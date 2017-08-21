@@ -16,6 +16,8 @@ audiostreamer.subdir = libs/audiostreamer
 audiostreamer.depends = audiobuffer
 app.depends = audiobuffer audiostreamer
 
+include(globals.pri)
+
 # -- Include all test projects
 contains(catchTests, true) {
     include(alltests.pri)
