@@ -1,10 +1,13 @@
+# Include global vars
+include($$PWD/../globals.pri)
+
 # Include to compile with code coverage flags (gcov)
 contains(catchTests, true) {
     CONFIG(debug, debug|release) {
         message(Activating gcov coverage compiler flags -> $$TARGET)
         QMAKE_CXXFLAGS += -fprofile-arcs -ftest-coverage
         QMAKE_LFLAGS += --coverage -fno-inline
-        equals(QMAKE_CXX, g++) { 
+        equals(QMAKE_CXX, g++) {
             QMAKE_LFLAGS += -lgcov
             QMAKE_LFLAGS += --coverage -fno-inline-small-functions -fno-default-inline
         }
