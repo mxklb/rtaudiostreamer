@@ -4,6 +4,9 @@ scriptPath=`pwd`
 popd > /dev/null
 cd "$scriptPath"
 
+# Set package maintainer
+export LOGNAME=$USER
+
 # Get version info from file
 version=$(cat deb/app/version)
 majver=${version:0:3}
