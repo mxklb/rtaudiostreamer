@@ -35,4 +35,4 @@ deploy_debian:
   artifacts:
     paths:
       - rtaudiostreamer-*.deb
-    name: "rtaudiostreamer.ubuntu14-04_amd64.deb"
+    name: "rtaudiostreamer_amd64.deb"
