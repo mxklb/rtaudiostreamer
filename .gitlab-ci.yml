@@ -6,7 +6,7 @@ stages:
 
 before_script:
 - apt-get update -y
-- apt-get install -y catch gdb gcovr librtaudio-dev git
+- apt-get install -y wget xvfb librtaudio-dev
 - git submodule update --init --recursive
 
 debug_tests:
@@ -16,6 +16,14 @@ debug_tests:
     - make
     - bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
     - gcovr -r . -e '.*extern.*' -e '.*moc_.*'
+    - chmod +x lcov.sh && ./lcov.sh
+    - mv coverage/*.pdf .
+    - mv coverage/*.tar.gz .
+  artifacts:
+    paths:
+      - coverage.pdf
+      - coverage.tar.gz
+    name: "test_coverage"
 
 release_tests:
   stage: build
