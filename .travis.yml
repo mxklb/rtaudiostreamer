@@ -3,7 +3,7 @@ os:
   - linux
   - osx
 sudo: required
-dist: trusty  
+dist: trusty
 compiler:
   - gcc
   - clang
@@ -16,5 +16,10 @@ before_install:
 script:
   - qmake RtAudioStreamer.pro -r CONFIG+=debug
   - make
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make distclean ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then echo "catchTests=false" > globals.pri ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then qmake RtAudioStreamer.pro -r CONFIG+=release ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then chmod +x pkgs/macOS.sh && pkgs/macOS.sh ; fi
 after_success:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash <(curl -s https://codecov.io/bash) ; fi
