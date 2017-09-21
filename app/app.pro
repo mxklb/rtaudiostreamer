@@ -21,3 +21,6 @@ unix:!macx {
     target.path = $$[QT_INSTALL_PREFIX]/bin
     INSTALLS += target
 }
+macx {
+    ICON = ../img/logo.icns
+}

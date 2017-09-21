@@ -64,3 +64,7 @@ executables=$(echo "${libBinaries[*]}")
 # Create a .dmg image (with Qt libs)
 echo "Creating the .dmg disk image ..."
 macdeployqt $appPath -dmg $executables
+
+# Modify/Optimize .dmg image
+chmod +x "$scriptPath/osx/dmg.sh"
+$scriptPath/osx/dmg.sh "$scriptPath/../app/$binName.dmg"
