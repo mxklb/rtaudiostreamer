@@ -9,7 +9,10 @@ cd $scriptPath
 
 mkdir dmg
 cp $scriptPath/../../app/RtAudioStreamer-*.dmg dmg/RtAudioStreamer.dmg
+cp $scriptPath/travis.yml dmg/.travis.yml
+cp $scriptPath/README.md dmg/README.md
 cd dmg
+
 ls -la
 
 git init
