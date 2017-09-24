@@ -13,11 +13,9 @@ cp $scriptPath/travis.yml dmg/.travis.yml
 cp $scriptPath/README.md dmg/README.md
 cd dmg
 
-ls -la
-
 git init
 git config user.name "travis"
 git config user.email "travis@email.com"
 git add .
-git commit -m "OSX deployment from travis"
+git commit -m "OSX deployment - Pushed by travis [$TRAVIS_COMMIT]"
 git push --force --quiet "https://${GH_TOKEN}@github.com/mxklb/rtaudiostreamer" master:osx-deploy > /dev/null 2>&1
