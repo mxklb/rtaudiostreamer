@@ -21,6 +21,7 @@ unix:!macx {
     target.path = $$[QT_INSTALL_PREFIX]/bin
     INSTALLS += target
 }
-macx {
-    ICON = ../img/logo.icns
-}
+
+# Set application icon
+macx:ICON = ../img/logo.icns
+win32:RC_ICONS += ../img/logo.ico
