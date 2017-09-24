@@ -21,5 +21,6 @@ after_success:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then echo "catchTests=false" > globals.pri ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then qmake RtAudioStreamer.pro -r CONFIG+=release ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then chmod +x pkgs/macOS.sh && pkgs/macOS.sh ; fi  
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then chmod +x pkgs/macOS.sh && pkgs/macOS.sh ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then chmod +x pkgs/osx/deploy.sh && pkgs/osx/deploy.sh ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then bash <(curl -s https://codecov.io/bash) ; fi
