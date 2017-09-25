@@ -42,9 +42,6 @@ for(lib, customLibs) {
             LIBS += -F$${OUTDIR}/ -framework $${LIBNAME}
             PRE_TARGETDEPS += $${OUTDIR}/$${LIBNAME}.framework
             INCLUDEPATH += -F$${LIBDIR}
-            #equals(TEMPLATE, app) {
-            #    QMAKE_POST_LINK += install_name_tool -add_rpath @executable_path/../Frameworks/$${LIBNAME}.framework $$OUT_PWD/$${TARGET}.app/Contents/MacOS/$${TARGET}
-            #}
         }
         else {
             LIBS += -L$${OUTDIR}/ -l$${LIBNAME}

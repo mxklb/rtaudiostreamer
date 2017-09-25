@@ -1,7 +1,7 @@
 [Desktop Entry]
 Version=M.m
 Type=Application
-Categories=Sound;Development;GTK;GNOME;
+Categories=AudioVideo;Audio;
 Terminal=false
 Name="RtAudioStreamer"
 Comment="Streaming Audio with RtAudio API"
