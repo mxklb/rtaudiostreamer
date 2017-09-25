@@ -33,7 +33,7 @@ cp deb/app/RtAudioStreamer.desktop deb/$pkgname-$version/$pkgname.desktop
 cd deb/$pkgname-$version
 
 # Configure build without tests
-sed -i '1s/.*/catchTests=false/' globals.pri
+echo "catchTests=false" > globals.pri
 
 # Initialize debian configurations
 dh_make --createorig --yes --single --email dev@xamblak.de --copyright mit
