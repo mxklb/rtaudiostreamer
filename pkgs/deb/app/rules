@@ -7,7 +7,7 @@
 export QT_SELECT := qt5
 
 %:
-	dh $@ --with bash-completion
+	dh $@
 
 # Delete rpath linker settings
 override_dh_auto_build:
