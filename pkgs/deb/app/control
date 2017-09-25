@@ -5,12 +5,13 @@ Maintainer: xam <dev@xamblak.de>
 Build-Depends: debhelper (>= 8.0.0)
 Standards-Version: 3.9.4
 Homepage: https://github.com/mxklb/rtaudiostreamer
-#Vcs-Git: git://git.debian.org/collab-maint/rtaudiostreamer.git
-#Vcs-Browser: http://git.debian.org/?p=collab-maint/rtaudiostreamer.git;a=summary
+Vcs-Git: https://github.com/mxklb/rtaudiostreamer.git
+Vcs-Browser: https://github.com/mxklb/rtaudiostreamer
 
 Package: rtaudiostreamer-M.m
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 #Build-Depends:
-Description: An App using RtAudio API to process real time audio streams
- This is a C++ qmake app which uses RtAudio API to process real time audio streams from connected audio hardware. This is an example project how to use RtAudioAPI for multi OS audio / soundcard monitoring.
+Description: Simple app to process real time audio
+ This is a terminal app which uses RtAudio to process real time audio streams
+ from connected audio hardware.

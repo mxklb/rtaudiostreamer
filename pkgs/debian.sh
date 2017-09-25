@@ -58,5 +58,11 @@ chmod +x debian/rules
 chmod -x debian/menu
 chmod -x debian/dirs
 
+# Correct debian/copyright template
+sed -i '32,37d' debian/copyright
+sed -i '4,9d' debian/copyright
+sed -i '6d' debian/copyright
+sed -i '3s/.*/Source: <https:\/\/github.com\/mxklb\/rtaudiostreamer>/' debian/copyright
+
 # Build the package
 dpkg-buildpackage -b -rfakeroot -us -uc -tc
