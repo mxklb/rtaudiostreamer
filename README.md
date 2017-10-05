@@ -11,10 +11,9 @@ It's an example project how to use RtAudio for multi OS audio / soundcard monito
 [![GitLab license](https://img.shields.io/badge/MIT-license-blue.svg)](https://gitlab.com/mxklb/rtaudiostreamer/blob/master/LICENSE)
 
 Download latest development version here
-- macOS package: [RtAudioStreamer.dmg](https://rawgit.com/mxklb/rtaudiostreamer/osx-deploy/RtAudioStreamer.dmg)
-- Debian packages:
-    - [rtaudiostreamer.ubuntu14.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_trusty)
-    - [rtaudiostreamer.ubuntu16.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_xenial)
+- [RtAudioStreamer.macOS-10.11.dmg](https://rawgit.com/mxklb/rtaudiostreamer/osx-deploy/RtAudioStreamer.dmg)
+- [rtaudiostreamer.ubuntu14.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_trusty)
+- [rtaudiostreamer.ubuntu16.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_xenial)
 
 ## Build Dependencies
 To succesfully build on Ubuntu:
