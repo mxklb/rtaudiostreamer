@@ -31,16 +31,29 @@ release_tests:
     - qmake RtAudioStreamer.pro -r CONFIG+=release
     - make
 
-deploy_debian:
+deploy_trusty:
   stage: deploy
+  image: mxklb/docker-qt5-deb:trusty
   only:
     - master
   script:
-    - export USER="mxklb"
-    - chmod +x pkgs/debian.sh
-    - pkgs/debian.sh
+    - export USER=$GITLAB_USER_LOGIN
+    - chmod +x pkgs/debian.sh && pkgs/debian.sh
     - mv pkgs/deb/rtaudiostreamer-*.deb .
   artifacts:
     paths:
       - rtaudiostreamer-*.deb
-    name: "rtaudiostreamer_amd64.deb"
+    name: "rtaudiostreamer-trusty_amd64.deb"
+
+deploy_xenial:
+  stage: deploy
+  image: mxklb/docker-qt5-deb:xenial
+  only:
+    - master
+  script:
+    - chmod +x pkgs/debian.sh && pkgs/debian.sh
+    - mv pkgs/deb/rtaudiostreamer-*.deb .
+  artifacts:
+    paths:
+      - rtaudiostreamer-*.deb
+    name: "rtaudiostreamer-xenial_amd64.deb"

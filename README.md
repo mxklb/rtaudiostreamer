@@ -12,10 +12,12 @@ It's an example project how to use RtAudio for multi OS audio / soundcard monito
 
 Download latest development version here
 - macOS package: [RtAudioStreamer.dmg](https://rawgit.com/mxklb/rtaudiostreamer/osx-deploy/RtAudioStreamer.dmg)
-- Debian package: [rtaudiostreamer_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_debian)
+- Debian packages:
+    - [rtaudiostreamer.ubuntu14.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_trusty)
+    - [rtaudiostreamer.ubuntu16.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_xenial)
 
 ## Build Dependencies
-To succesfully build on Ubuntu (trusty):
+To succesfully build on Ubuntu:
 
     sudo apt-get install qt5-default qt5-qmake gdb librtaudio-dev
 
