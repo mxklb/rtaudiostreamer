@@ -57,3 +57,16 @@ deploy_xenial:
     paths:
       - rtaudiostreamer-*.deb
     name: "rtaudiostreamer-xenial_amd64.deb"
+
+deploy_bionic:
+  stage: deploy
+  image: mxklb/docker-qt5-deb:bionic
+  only:
+    - master
+  script:
+    - chmod +x pkgs/debian.sh && pkgs/debian.sh
+    - mv pkgs/deb/rtaudiostreamer-*.deb .
+  artifacts:
+    paths:
+      - rtaudiostreamer-*.deb
+    name: "rtaudiostreamer-bionic_amd64.deb"
