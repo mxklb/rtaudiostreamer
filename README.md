@@ -14,6 +14,7 @@ Download latest development version here
 - [RtAudioStreamer.macOS-10.11.dmg](https://rawgit.com/mxklb/rtaudiostreamer/osx-deploy/RtAudioStreamer.dmg)
 - [rtaudiostreamer.ubuntu14.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_trusty)
 - [rtaudiostreamer.ubuntu16.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_xenial)
+- [rtaudiostreamer.ubuntu18.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_bionic)
 
 ## Build Dependencies
 To succesfully build on Ubuntu:
