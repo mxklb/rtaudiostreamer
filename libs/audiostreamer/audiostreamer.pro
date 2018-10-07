@@ -10,6 +10,8 @@ macx {
     LIBS += -L/usr/local/lib -lrtaudio
 }
 
+INCLUDEPATH += /usr/include/rtaudio/
+
 SOURCES += audiostreamer.cpp \
     audioprocessing.cpp \
     audiocallback.cpp \
