@@ -31,6 +31,22 @@ release_tests:
     - qmake RtAudioStreamer.pro -r CONFIG+=release
     - make
 
+deploy_appimage:
+  stage: deploy
+  image: mxklb/docker-qt5-deb
+  only:
+    - master
+  script:
+    - echo "catchTests=false" > globals.pri
+    - qmake RtAudioStreamer.pro -r CONFIG+=release
+    - make
+    - chmod +x pkgs/appimage.sh && pkgs/appimage.sh
+    - mv pkgs/RtAudioStreamer-*.AppImage .
+  artifacts:
+    paths:
+      - RtAudioStreamer-*.AppImage
+    name: "RtAudioStreamer-x86_64"
+
 deploy_trusty:
   stage: deploy
   image: mxklb/docker-qt5-deb:trusty

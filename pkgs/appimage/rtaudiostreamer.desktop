@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=M.m
+Type=Application
+Categories=AudioVideo;Audio;
+Terminal=false
+Name=RtAudioStreamer
+Name[en_US]=RtAudioStreamer
+Comment="Streaming Audio with RtAudio API"
+Icon=rtaudiostreamer
+Exec=AppRun %F
+StartupNotify=true
