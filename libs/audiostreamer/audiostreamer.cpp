@@ -152,13 +152,13 @@ void AudioStreamer::setActiveDevice(unsigned int id, QVector<unsigned int> chann
 bool AudioStreamer::startStream(StreamSettings settings)
 {
     if( audioBuffer.numberOfChannels() == 0 ) {
-        qWarning() << "Unable to start stream without input channels!" << endl;
+        cerr << "Unable to start stream without input channels!" << endl;
         return false;
     }
 
     try {
         if( rtAudio->isStreamRunning() || rtAudio->isStreamOpen() ) {
-            qWarning() << "Stream could not be started, it's already running!" << endl;
+            cerr << "Stream could not be started, it's already running!" << endl;
             return false;
         }
     }
@@ -174,7 +174,7 @@ bool AudioStreamer::startStream(StreamSettings settings)
         audioBuffer.rawBuffer->rawBufferSize != settings.hwBufferSize )
     {
         if( audioBuffer.prepareRawBuffer(settings.audioFormat, settings.hwBufferSize) == false ) {
-            qCritical() << "Switch audio format" << settings.audioFormat << "failed!" << endl;
+            cerr << "Switch audio format" << settings.audioFormat << "failed!" << endl;
             return false;
         }
     }
@@ -273,7 +273,7 @@ void AudioStreamer::slotUpdateBuffers()
             audioProcessing.slotUpdateRingBuffer(&audioBuffer);
             processLatestAudio();
         }
-        else { cerr << "Detected missing frames .." << endl; }
+        else { cerr << "Detected missing frames .."; }
     }
 }
 

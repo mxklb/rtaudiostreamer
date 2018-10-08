@@ -12,20 +12,20 @@ int AudioCallback::interleaved( void *outputBuffer, void *inputBuffer, unsigned 
 {
     Q_UNUSED(outputBuffer)
 
-    if( status ) qWarning() << "Stream over/underflow detected.";
-    if( hwFrameCount == 0 ) qWarning() << "Zero frames detected.";
+    if( status ) std::cerr << "Stream over/underflow detected.";
+    if( hwFrameCount == 0 ) std::cerr << "Zero frames detected.";
 
     AudioStreamer *audioStreamer = (AudioStreamer*)streamer;
     AudioBuffer *audioBuffer = audioStreamer->getAudioBuffer();
     unsigned int rawChannels = audioBuffer->numberOfChannels(true);
 
     if( rawChannels == 0 ) {
-        qCritical() << "Zero channels detected.";
+        std::cerr << "Zero channels detected.";
         return 1;
     }
 
     if( !audioBuffer->rawBuffer->insert(inputBuffer, rawChannels*hwFrameCount) ) {
-        qWarning() << "Buffer overrun detected! @Streamtime: " << streamTime;
+        std::cerr << "Buffer overrun detected! @Streamtime: " << streamTime;
     }
 
     audioBuffer->frameCounter += hwFrameCount;
