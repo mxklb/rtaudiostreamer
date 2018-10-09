@@ -35,12 +35,13 @@ for(lib, customLibs) {
             unix:!macx: LIB_EXTENSION = so
         }
         win32 {
-            LIB_EXTENSION = $$QMAKE_EXTENSION_SHLIB
+            msvc: LIB_EXTENSION = $$QMAKE_EXTENSION_STATICLIB
+            gcc: LIB_EXTENSION = dll.a
             isEmpty(LIB_EXTENSION) {
                 LIB_EXTENSION = lib
             }
         }
-        message($${LIB_EXTENSION})
+        #message($${LIB_EXTENSION})
 
         # Get library's binary directory
         OUTDIR = $$clean_path($$OUT_PWD/$${LIBDIR})
