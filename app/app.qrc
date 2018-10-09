@@ -1,0 +1,8 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+  <file alias="rtaudiostreamer.svg">../img/RtAudioStreamer.svg</file>
+  <file alias="rtaudiostreamer.png">../img/logo.png</file>
+  <file alias="rtaudiostreamer.icns">../img/logo.icns</file>
+  <file alias="rtaudiostreamer.ico">../img/logo.ico</file>
+</qresource>
+</RCC>

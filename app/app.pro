@@ -21,6 +21,8 @@ ICON = ../img/RtAudioStreamer.svg
 macx: ICON = ../img/logo.icns
 win32: RC_ICONS += ../img/logo.ico
 
+RESOURCES += app.qrc
+
 unix:!macx {
     shortcutfiles.files = ../pkgs/appimage/rtaudiostreamer.desktop
     shortcutfiles.path = $$[QT_INSTALL_PREFIX]/share/applications/
