@@ -3,7 +3,7 @@
 TEMPLATE = app
 
 CONFIG += console
-CONFIG += c++14
+CONFIG += c++11
 
 # Set catch header include path
 INCLUDEPATH += $$PWD/extern/catch
