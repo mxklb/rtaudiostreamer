@@ -35,8 +35,7 @@ for(lib, customLibs) {
             unix:!macx: LIB_EXTENSION = so
         }
         win32 {
-            msvc: LIB_EXTENSION = $$QMAKE_EXTENSION_STATICLIB
-            gcc: LIB_EXTENSION = dll.a
+            LIB_EXTENSION = $$QMAKE_EXTENSION_STATICLIB
             isEmpty(LIB_EXTENSION) {
                 LIB_EXTENSION = lib
             }
@@ -53,8 +52,14 @@ for(lib, customLibs) {
             INCLUDEPATH += -F$${LIBDIR}
         }
         win32 {
-            LIBS += $${OUTDIR}/$${WINDIR}/$${LIBNAME}.$${LIB_EXTENSION}
-            PRE_TARGETDEPS += $${OUTDIR}/$${WINDIR}/$${LIBNAME}.$${LIB_EXTENSION}
+            msvc {
+                LIBS += $${OUTDIR}/$${WINDIR}/$${LIBNAME}.$${LIB_EXTENSION}
+                PRE_TARGETDEPS += $${OUTDIR}/$${WINDIR}/$${LIBNAME}.$${LIB_EXTENSION}
+            }
+            gcc {
+                LIBS += $${OUTDIR}/$${WINDIR}/lib$${LIBNAME}.$${LIB_EXTENSION}
+                PRE_TARGETDEPS += $${OUTDIR}/$${WINDIR}/lib$${LIBNAME}.$${LIB_EXTENSION}
+            }
         }
         unix:!macx {
             LIBS += -L$${OUTDIR}/ -l$${LIBNAME}
