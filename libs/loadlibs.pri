@@ -12,6 +12,8 @@
 # Note: include(loadlibs.pri) will setup all given custom libs ->
 # -> INCLUDEPATH, DEPENDPATH, LIBS, PRE_TARGETDEPS & QMAKE_LFLAGS.
 
+include($$PWD/win32.pri)
+
 QMAKE_PROJECT_DEPTH = 0 # Forces absolute paths
 
 for(lib, customLibs) {
@@ -26,15 +28,21 @@ for(lib, customLibs) {
         }
         #message($${INCLUDEPATH})
 
+        #  Set library file extension
         LIB_EXTENSION = $$QMAKE_EXTENSION_SHLIB
         isEmpty(LIB_EXTENSION) {
-            win32: LIB_EXTENSION = dll
-            macx:  LIB_EXTENSION = dylib
-            else:  LIB_EXTENSION = so
+            macx: LIB_EXTENSION = dylib
+            unix:!macx: LIB_EXTENSION = so
+        }
+        win32 {
+            LIB_EXTENSION = $$QMAKE_EXTENSION_STATICLIB
+            isEmpty(LIB_EXTENSION) {
+                LIB_EXTENSION = lib
+            }
         }
         #message($${LIB_EXTENSION})
 
-        # Get dynamic lib binary directory
+        # Get library's binary directory
         OUTDIR = $$clean_path($$OUT_PWD/$${LIBDIR})
 
         macx {
@@ -43,7 +51,11 @@ for(lib, customLibs) {
             PRE_TARGETDEPS += $${OUTDIR}/$${LIBNAME}.framework
             INCLUDEPATH += -F$${LIBDIR}
         }
-        else {
+        win32 {
+            LIBS += $${OUTDIR}/$${WINDIR}/$${LIBNAME}.$${LIB_EXTENSION}
+            PRE_TARGETDEPS += $${OUTDIR}/$${WINDIR}/$${LIBNAME}.$${LIB_EXTENSION}
+        }
+        unix:!macx {
             LIBS += -L$${OUTDIR}/ -l$${LIBNAME}
             PRE_TARGETDEPS += $${OUTDIR}/lib$${LIBNAME}.$${LIB_EXTENSION}
             QMAKE_LFLAGS += "-Wl,-rpath,\'$$OUTDIR\'"

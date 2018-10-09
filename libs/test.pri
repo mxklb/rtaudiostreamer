@@ -3,12 +3,19 @@
 TEMPLATE = app
 
 CONFIG += console
-CONFIG += c++11
+CONFIG += c++14
 
 # Set catch header include path
 INCLUDEPATH += $$PWD/extern/catch
 
 # Trigger execution of the test target
-win32: QMAKE_POST_LINK=$${TARGET}.exe
-macx:  QMAKE_POST_LINK=$$OUT_PWD/$${TARGET}.app/Contents/MacOS/$${TARGET}>&2
-else:  QMAKE_POST_LINK=$$OUT_PWD/$$TARGET>&2
+win32 {
+  include($$PWD/win32.pri)
+  QMAKE_POST_LINK = $$system_path($$OUT_PWD/$${WINDIR}/$${TARGET}.exe)
+}
+macx {
+  QMAKE_POST_LINK = $$OUT_PWD/$${TARGET}.app/Contents/MacOS/$${TARGET}>&2
+}
+unix:!macx {
+  QMAKE_POST_LINK = $$OUT_PWD/$$TARGET>&2
+}

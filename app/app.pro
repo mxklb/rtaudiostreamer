@@ -13,15 +13,26 @@ SOURCES += main.cpp
 customLibs = ../libs/audiobuffer/audiobuffer
 customLibs += ../libs/audiostreamer/audiostreamer
 
-# Load and link custom libs
+# Load and link these custom libs
 include(../libs/loadlibs.pri)
 
+# Set application icon
+ICON = ../img/RtAudioStreamer.svg
+macx: ICON = ../img/logo.icns
+win32: RC_ICONS += ../img/logo.ico
+
+RESOURCES += app.qrc
+
 unix:!macx {
+    shortcutfiles.files = ../pkgs/appimage/rtaudiostreamer.desktop
+    shortcutfiles.path = $$[QT_INSTALL_PREFIX]/share/applications/
+    INSTALLS += shortcutfiles
+
+    data.files += ../img/RtAudioStreamer.svg
+    data.path = $$[QT_INSTALL_PREFIX]/share/pixmaps/
+    INSTALLS += data
+
     target.files += $$OUT_PWD/$$TARGET
     target.path = $$[QT_INSTALL_PREFIX]/bin
     INSTALLS += target
 }
-
-# Set application icon
-macx:ICON = ../img/logo.icns
-win32:RC_ICONS += ../img/logo.ico

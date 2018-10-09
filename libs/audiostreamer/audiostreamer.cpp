@@ -253,7 +253,7 @@ AudioBuffer* AudioStreamer::getAudioBuffer()
 }
 
 /*
- * Triggers audio callback finished signal.
+ * Triggers audio callback finished signal => slotUpdateBuffers().
  */
 void AudioStreamer::callbackFinished()
 {
@@ -273,7 +273,7 @@ void AudioStreamer::slotUpdateBuffers()
             audioProcessing.slotUpdateRingBuffer(&audioBuffer);
             processLatestAudio();
         }
-        else { cerr << "Detected missing frames .."; }
+        else { cerr << "Detected missing frames ..\n"; }
     }
 }
 
