@@ -33,7 +33,7 @@ release_tests:
 
 deploy_appimage:
   stage: deploy
-  image: mxklb/docker-qt5-deb
+  image: mxklb/docker-qt5-deb:trusty
   only:
     - master
   script:
