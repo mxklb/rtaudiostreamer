@@ -6,7 +6,7 @@ stages:
 
 before_script:
 - apt-get update -y
-- apt-get install -y wget xvfb chrpath librtaudio-dev libfuse2 libcairo2
+- apt-get install -y wget xvfb chrpath librtaudio-dev libfuse2 libcairo2 libqt5svg5-dev
 - git submodule update --init --recursive
 
 debug_tests:
