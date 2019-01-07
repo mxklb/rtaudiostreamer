@@ -41,10 +41,10 @@ deploy_appimage:
     - qmake RtAudioStreamer.pro -r CONFIG+=release
     - make
     - chmod +x pkgs/appimage.sh && pkgs/appimage.sh
-    - mv pkgs/RtAudioStreamer-*.AppImage .
+    - mv pkgs/RtAudioStreamer* .
   artifacts:
     paths:
-      - RtAudioStreamer-*.AppImage
+      - RtAudioStreamer*
     name: "RtAudioStreamer-x86_64"
 
 deploy_trusty:
