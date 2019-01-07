@@ -6,7 +6,7 @@ stages:
 
 before_script:
 - apt-get update -y
-- apt-get install -y wget xvfb chrpath librtaudio-dev libfuse2 libcairo2 libqt5svg5-dev
+- apt-get install -y wget xvfb chrpath librtaudio-dev libfuse2 libcairo2
 - git submodule update --init --recursive
 
 debug_tests:
@@ -41,10 +41,10 @@ deploy_appimage:
     - qmake RtAudioStreamer.pro -r CONFIG+=release
     - make
     - chmod +x pkgs/appimage.sh && pkgs/appimage.sh
-    - mv pkgs/RtAudioStreamer* .
+    - mv pkgs/RtAudioStreamer-* .
   artifacts:
     paths:
-      - RtAudioStreamer*
+      - RtAudioStreamer-*
     name: "RtAudioStreamer-x86_64"
 
 deploy_trusty:
