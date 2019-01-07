@@ -79,14 +79,14 @@ bool RawBuffer<type>::insert(void* theFrames, unsigned int size, bool dequeue)
  * Thread save: Insert/push frames into concurrent queue (size = channelCount*hwBuffer)
  */
 template<class type>
-bool RawBuffer<type>::pushFramesToQueue(type* frames, unsigned int size)
+bool RawBuffer<type>::pushFramesToQueue(type* theFrames, unsigned int size)
 {
     unsigned int numOfFrames = rawBufferSize*numberOfChannels;
     if( size > numOfFrames ) {
         std::cerr << "Reducing data to push from " << size << " to " << numOfFrames;
         size = numOfFrames;
     }
-    return rawBuffer->enqueue_bulk(frames, size);
+    return rawBuffer->enqueue_bulk(theFrames, size);
 }
 
 /*
