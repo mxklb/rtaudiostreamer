@@ -12,7 +12,7 @@ before_script:
 debug_tests:
   stage: build
   script:
-    - qmake RtAudioStreamer.pro -r CONFIG+=debug
+    - qmake rtaudiostreamer.pro -r CONFIG+=debug
     - make
     - bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
     - gcovr -r . -e '.*extern.*' -e '.*moc_.*'
@@ -28,7 +28,7 @@ debug_tests:
 release_tests:
   stage: build
   script:
-    - qmake RtAudioStreamer.pro -r CONFIG+=release
+    - qmake rtaudiostreamer.pro -r CONFIG+=release
     - make
 
 deploy_appimage:
@@ -38,14 +38,14 @@ deploy_appimage:
     - master
   script:
     - echo "catchTests=false" > globals.pri
-    - qmake RtAudioStreamer.pro -r CONFIG+=release
+    - qmake rtaudiostreamer.pro -r CONFIG+=release
     - make
     - chmod +x pkgs/appimage.sh && pkgs/appimage.sh
-    - mv pkgs/RtAudioStreamer-* .
+    - mv pkgs/rtaudiostreamer-* .
   artifacts:
     paths:
-      - RtAudioStreamer-*
-    name: "RtAudioStreamer-x86_64"
+      - rtaudiostreamer-*
+    name: "rtaudiostreamer-x86_64"
 
 deploy_trusty:
   stage: deploy

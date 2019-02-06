@@ -5,8 +5,8 @@ Categories=AudioVideo;Audio;
 Terminal=false
 Name="RtAudioStreamer"
 Comment="Streaming Audio with RtAudio API"
-Icon=/usr/share/pixmaps/RtAudioStreamer.svg
-Exec=/usr/bin/RtAudioStreamer
+Icon=/usr/share/pixmaps/rtaudiostreamer.svg
+Exec=/usr/bin/rtaudiostreamer
 StartupNotify=true
 Encoding=UTF-8
 

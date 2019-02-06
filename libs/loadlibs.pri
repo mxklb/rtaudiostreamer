@@ -39,6 +39,9 @@ for(lib, customLibs) {
             isEmpty(LIB_EXTENSION) {
                 LIB_EXTENSION = lib
             }
+            gcc {
+                LIB_EXTENSION = a
+            }
         }
         #message($${LIB_EXTENSION})
 
@@ -57,7 +60,7 @@ for(lib, customLibs) {
                 PRE_TARGETDEPS += $${OUTDIR}/$${WINDIR}/$${LIBNAME}.$${LIB_EXTENSION}
             }
             gcc {
-                LIBS += $${OUTDIR}/$${WINDIR}/lib$${LIBNAME}.$${LIB_EXTENSION}
+                LIBS += -L$${OUTDIR}/$${WINDIR}/ -l$${LIBNAME}
                 PRE_TARGETDEPS += $${OUTDIR}/$${WINDIR}/lib$${LIBNAME}.$${LIB_EXTENSION}
             }
         }

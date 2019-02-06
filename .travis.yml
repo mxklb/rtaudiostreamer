@@ -17,12 +17,12 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install qt5 rt-audio ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PATH=$(brew --prefix)/opt/qt5/bin:$PATH ; fi
 script:
-  - qmake RtAudioStreamer.pro -r CONFIG+=debug
+  - qmake rtaudiostreamer.pro -r CONFIG+=debug
   - make
 after_success:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make distclean ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then echo "catchTests=false" > globals.pri ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then qmake RtAudioStreamer.pro -r CONFIG+=release ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then qmake rtaudiostreamer.pro -r CONFIG+=release ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then make ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then chmod +x pkgs/macOS.sh && pkgs/macOS.sh ; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then chmod +x pkgs/osx/deploy.sh && pkgs/osx/deploy.sh ; fi

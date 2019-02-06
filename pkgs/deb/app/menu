@@ -1,4 +1,4 @@
 ?package(rtaudiostreamer-1.0-0):needs="x11" \
       section="Applications/Sound" \
       title="RtAudioStreamer" \
-      command="/usr/bin/RtAudioStreamer"
+      command="/usr/bin/myapp"

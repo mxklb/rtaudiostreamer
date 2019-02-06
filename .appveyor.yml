@@ -8,7 +8,11 @@ environment:
 
     - tbs_arch: "x64"
       tbs_tools: "mingw"
-      tbs_static_runtime: 1
+      tbs_static_runtime: 0
+
+matrix:
+  allow_failures:
+    - tbs_tools: "mingw"
 
 branches:
   except:
@@ -21,23 +25,24 @@ init:
 install:
   # Submodules are not cloned by default
   - git submodule update --init --recursive
+  - git clean -fdX
 
 build_script:
   - if [%tbs_tools%]==[mingw] if [%tbs_arch%]==[x64] SET PATH=C:\MinGW\bin;C:\Qt\5.9.5\mingw53_32\bin;C:\Qt\Tools\QtCreator\bin;%PATH%
   - if [%tbs_tools%]==[msvc14] if [%tbs_arch%]==[x64] SET PATH=C:\Qt\5.9\msvc2015\bin;C:\Qt\Tools\QtCreator\bin;%PATH%
   - echo "catchTests=false" > globals.pri
-  - qmake RtAudioStreamer.pro -r CONFIG+=%BUILD_TYPE%
+  - qmake rtaudiostreamer.pro -r CONFIG+=%BUILD_TYPE%
   - jom
   - jom clean
 #  - mingw32-make
 
 after_build:
   - ps: Get-ChildItem -rec -include *.exe,*.dll,*.lib,*.gcda,*.gcno
-#  - ps: dumpbin /dependents .\app\$env:BUILD_TYPE\RtAudioStreamer.exe
-  - ps: windeployqt app\$env:BUILD_TYPE\RtAudioStreamer.exe
-  - ps: md -Force RtAudioStreamer
-  - ps: Copy-Item -Path app\$env:BUILD_TYPE -Destination RtAudioStreamer –Recurse
-  - 7z a -r RtAudioStreamer-windows_x86.zip RtAudioStreamer
+#  - ps: dumpbin /dependents .\app\$env:BUILD_TYPE\rtaudiostreamer.exe
+  - ps: windeployqt app\$env:BUILD_TYPE\rtaudiostreamer.exe
+  - ps: md -Force rtaudiostreamer
+  - ps: Copy-Item -Path app\$env:BUILD_TYPE -Destination rtaudiostreamer –Recurse
+  - 7z a -r rtaudiostreamer-windows_x86.zip rtaudiostreamer
 
 artifacts:
-  - path: RtAudioStreamer-*.zip
+  - path: rtaudiostreamer-*.zip

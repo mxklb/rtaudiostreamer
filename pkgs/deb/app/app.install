@@ -1,5 +1,5 @@
-app/RtAudioStreamer usr/bin
+app/rtaudiostreamer usr/bin
 libs/**/lib*.so usr/lib
 libs/**/lib*.so.* usr/lib
-img/RtAudioStreamer.svg usr/share/pixmaps
+img/rtaudiostreamer.svg usr/share/pixmaps
 rtaudiostreamer.desktop usr/share/applications

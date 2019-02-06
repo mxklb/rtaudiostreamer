@@ -11,7 +11,7 @@ It's an example project how to use RtAudio for multi OS audio / soundcard monito
 [![GitLab license](https://img.shields.io/badge/MIT-license-blue.svg)](https://gitlab.com/mxklb/rtaudiostreamer/blob/master/LICENSE)
 
 Download latest development version here
-- [RtAudioStreamer-linux.x86_64.AppImage](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_appimage)
+- [rtaudiostreamer-linux.x86_64.AppImage](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_appimage)
 - [rtaudiostreamer.ubuntu18.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_bionic)
 - [rtaudiostreamer.ubuntu16.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_xenial)
 - [rtaudiostreamer.ubuntu14.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_trusty)

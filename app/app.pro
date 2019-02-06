@@ -1,5 +1,5 @@
 TEMPLATE = app
-TARGET = RtAudioStreamer
+TARGET = rtaudiostreamer
 
 CONFIG += console
 CONFIG += qt
@@ -17,7 +17,7 @@ customLibs += ../libs/audiostreamer/audiostreamer
 include(../libs/loadlibs.pri)
 
 # Set application icon
-ICON = ../img/RtAudioStreamer.svg
+ICON = ../img/rtaudiostreamer.svg
 macx: ICON = ../img/logo.icns
 win32: RC_ICONS += ../img/logo.ico
 
@@ -28,7 +28,7 @@ unix:!macx {
     shortcutfiles.path = $$[QT_INSTALL_PREFIX]/share/applications/
     INSTALLS += shortcutfiles
 
-    data.files += ../img/RtAudioStreamer.svg
+    data.files += ../img/rtaudiostreamer.svg
     data.path = $$[QT_INSTALL_PREFIX]/share/pixmaps/
     INSTALLS += data
 
@@ -36,3 +36,6 @@ unix:!macx {
     target.path = $$[QT_INSTALL_PREFIX]/bin
     INSTALLS += target
 }
+
+include(gitversion.pri)
+message(Build $$TARGET v$$VERSION)

@@ -1,14 +1,14 @@
-Source: rtaudiostreamer-M.m
+Source: myapp-M.m
 Section: sound
 Priority: optional
-Maintainer: xam <dev@xamblak.de>
+Maintainer: user <user@email.com>
 Build-Depends: debhelper (>= 8.0.0)
 Standards-Version: 3.9.4
-Homepage: https://github.com/mxklb/rtaudiostreamer
-Vcs-Git: https://github.com/mxklb/rtaudiostreamer.git
-Vcs-Browser: https://github.com/mxklb/rtaudiostreamer
+Homepage: https://github.com/user/project
+Vcs-Git: https://github.com/user/project.git
+Vcs-Browser: https://github.com/user/project
 
-Package: rtaudiostreamer-M.m
+Package: myapp-M.m
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 #Build-Depends:
