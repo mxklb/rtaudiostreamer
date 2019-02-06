@@ -2,7 +2,7 @@
 # Prints a debian changelog for all commits since latest release.
 # Note: This creates one source version for each commit (chd -U)
 
-project="cuteproject"
+project="rtaudiostreamer"
 
 # Create changelog since lastest tag/release
 gittag=$(git describe --abbrev=0 --tags)

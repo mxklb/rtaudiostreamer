@@ -36,7 +36,7 @@ cp ../alltests.pri deb/$pkgname-$version
 cp ../$appName.pro deb/$pkgname-$version
 
 # Copy other files (some desktop config)
-cp deb/app/rtaudiostreamer.desktop deb/$pkgname-$version/$pkgname.desktop
+cp deb/app/$appName.desktop deb/$pkgname-$version/$pkgname.desktop
 
 # Go into build directory
 cd deb/$pkgname-$version
@@ -92,7 +92,13 @@ chmod -x debian/dirs
 sed -i '32,37d' debian/copyright
 sed -i '4,9d' debian/copyright
 sed -i '6d' debian/copyright
-sed -i '3s/.*/Source: <https:\/\/github.com\/mxklb\/rtaudiostreamer>/' debian/copyright
+sed -i '3s/.*/Source: <https:\/\/github.com\/'$ghUser'\/'$ghProject'>/' debian/copyright
+
+# Append latest commits to changelog
+../changelog.sh >> debian/tmplog
+cat debian/changelog >> debian/tmplog
+cat debian/tmplog > debian/changelog
+rm debian/tmplog
 
 # Build the package
 dpkg-buildpackage -b -rfakeroot -us -uc -tc
