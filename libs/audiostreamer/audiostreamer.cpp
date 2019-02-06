@@ -274,7 +274,6 @@ void AudioStreamer::slotUpdateBuffers()
             audioProcessing.slotUpdateRingBuffer(&audioBuffer);
             processLatestAudio();
         }
-        else { cerr << "Detected missing frames ..\n"; }
     }
 }
 
