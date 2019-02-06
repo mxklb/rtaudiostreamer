@@ -5,7 +5,7 @@ This is a C++ qmake app which uses [RtAudio](https://github.com/thestk/rtaudio) 
 It's an example project how to use RtAudio for multi OS audio / soundcard monitoring.
 
 [![Build Status](https://travis-ci.org/mxklb/rtaudiostreamer.svg?branch=master)](https://travis-ci.org/mxklb/rtaudiostreamer)
-[![codecov](https://codecov.io/gh/mxklb/rtaudiostreamer/branch/master/graph/badge.svg)](https://codecov.io/gh/mxklb/rtaudiostreamer)
+[![codecov](https://codecov.io/gl/mxklb/rtaudiostreamer/branch/master/graph/badge.svg)](https://codecov.io/gl/mxklb/rtaudiostreamer)
 [![build status](https://gitlab.com/mxklb/rtaudiostreamer/badges/master/build.svg)](https://gitlab.com/mxklb/rtaudiostreamer/pipelines)
 [![coverage report](https://gitlab.com/mxklb/rtaudiostreamer/badges/master/coverage.svg)](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=debug_tests_coverage)
 [![GitLab license](https://img.shields.io/badge/MIT-license-blue.svg)](https://gitlab.com/mxklb/rtaudiostreamer/blob/master/LICENSE)
