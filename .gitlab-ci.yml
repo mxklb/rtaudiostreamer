@@ -1,16 +1,32 @@
+# Build OS = Ubuntu LTS (latest)
 image: mxklb/docker-qt5-deb
 
 stages:
+- tests
 - build
 - deploy
+- release
 
 before_script:
 - apt-get update -y
 - apt-get install -y wget xvfb chrpath librtaudio-dev libfuse2 libcairo2
 - git submodule update --init --recursive
 
+## 1 Debug builds (++ test)
+.debug_build_with_tests:
+  stage: tests
+  except:
+    - tags
+  script:
+    - qmake rtaudiostreamer.pro -r CONFIG+=debug
+    - make
+
 debug_tests:
-  stage: build
+  extends: .debug_build_with_tests
+
+# Debug build (++ test coverage)
+debug_tests_coverage:
+  extends: .debug_build_with_tests
   script:
     - qmake rtaudiostreamer.pro -r CONFIG+=debug
     - make
@@ -25,21 +41,94 @@ debug_tests:
       - coverage.tar.gz
     name: "test_coverage"
 
+# Test latest Ubuntu (rolling)
+debug_tests_rolling:
+  extends: .debug_build_with_tests
+  image: mxklb/docker-qt5-deb:rolling
+  allow_failure: true
+
+# Test bleeding Ubuntu (devel)
+debug_tests_devel:
+  extends: .debug_build_with_tests
+  image: mxklb/docker-qt5-deb:devel
+  allow_failure: true
+
+## 2 Release build (++ tests)
 release_tests:
-  stage: build
+  stage: tests
   script:
     - qmake rtaudiostreamer.pro -r CONFIG+=release
     - make
 
-deploy_appimage:
-  stage: deploy
-  image: mxklb/docker-qt5-deb:trusty
-  only:
-    - master
+## 3 Release build (no tests)
+release_build:
+  stage: build
   script:
     - echo "catchTests=false" > globals.pri
     - qmake rtaudiostreamer.pro -r CONFIG+=release
     - make
+
+## 4 Build & Deploy debian packages
+.build_debian:
+  stage: deploy
+  artifacts:
+    paths:
+      - rtaudiostreamer-*.deb
+
+.build_debian_xenial:
+  extends: .build_debian
+  image: mxklb/docker-qt5-deb:xenial
+  script:
+    - chmod +x pkgs/version.sh
+    - chmod +x pkgs/debian.sh && pkgs/debian.sh
+    - mv pkgs/deb/rtaudiostreamer-*.deb .
+  artifacts:
+    name: "rtaudiostreamer-xenial_amd64"
+
+.build_debian_trusty:
+  extends: .build_debian
+  image: mxklb/docker-qt5-deb:trusty
+  script:
+    - export USER=$GITLAB_USER_LOGIN
+    - chmod +x pkgs/version.sh
+    - chmod +x pkgs/debian.sh && pkgs/debian.sh
+    - mv pkgs/deb/rtaudiostreamer-*.deb .
+  artifacts:
+    name: "rtaudiostreamer-trusty_amd64"
+
+# Continuous deployments
+debian_trusty_latest:
+  extends: .build_debian_trusty
+
+debian_xenial_latest:
+  extends: .build_debian_xenial
+
+# Release deployments
+debian_trusty_stable:
+  extends: .build_debian_trusty
+  stage: release
+  only:
+    - tags
+  except:
+    - /^(?!master).+@/
+
+debian_xenial_stable:
+  extends: .build_debian_xenial
+  stage: release
+  only:
+    - tags
+  except:
+    - /^(?!master).+@/
+
+## 5 Build & Deploy .AppImage's
+.build_appimage:
+  stage: deploy
+  image: mxklb/docker-qt5-deb:trusty
+  script:
+    - echo "catchTests=false" > globals.pri
+    - qmake rtaudiostreamer.pro -r CONFIG+=release
+    - make
+    - chmod +x pkgs/version.sh
     - chmod +x pkgs/appimage.sh && pkgs/appimage.sh
     - mv pkgs/rtaudiostreamer-* .
   artifacts:
@@ -47,42 +136,15 @@ deploy_appimage:
       - rtaudiostreamer-*
     name: "rtaudiostreamer-x86_64"
 
-deploy_trusty:
-  stage: deploy
-  image: mxklb/docker-qt5-deb:trusty
-  only:
-    - master
-  script:
-    - export USER=$GITLAB_USER_LOGIN
-    - chmod +x pkgs/debian.sh && pkgs/debian.sh
-    - mv pkgs/deb/rtaudiostreamer-*.deb .
-  artifacts:
-    paths:
-      - rtaudiostreamer-*.deb
-    name: "rtaudiostreamer-trusty_amd64.deb"
+# Continuous deployment
+appimage_latest:
+  extends: .build_appimage
 
-deploy_xenial:
-  stage: deploy
-  image: mxklb/docker-qt5-deb:xenial
+# Release deployment
+appimage_stable:
+  extends: .build_appimage
+  stage: release
   only:
-    - master
-  script:
-    - chmod +x pkgs/debian.sh && pkgs/debian.sh
-    - mv pkgs/deb/rtaudiostreamer-*.deb .
-  artifacts:
-    paths:
-      - rtaudiostreamer-*.deb
-    name: "rtaudiostreamer-xenial_amd64.deb"
-
-deploy_bionic:
-  stage: deploy
-  image: mxklb/docker-qt5-deb:bionic
-  only:
-    - master
-  script:
-    - chmod +x pkgs/debian.sh && pkgs/debian.sh
-    - mv pkgs/deb/rtaudiostreamer-*.deb .
-  artifacts:
-    paths:
-      - rtaudiostreamer-*.deb
-    name: "rtaudiostreamer-bionic_amd64.deb"
+    - tags
+  except:
+    - /^(?!master).+@/

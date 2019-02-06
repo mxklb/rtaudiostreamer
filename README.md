@@ -7,15 +7,14 @@ It's an example project how to use RtAudio for multi OS audio / soundcard monito
 [![Build Status](https://travis-ci.org/mxklb/rtaudiostreamer.svg?branch=master)](https://travis-ci.org/mxklb/rtaudiostreamer)
 [![codecov](https://codecov.io/gh/mxklb/rtaudiostreamer/branch/master/graph/badge.svg)](https://codecov.io/gh/mxklb/rtaudiostreamer)
 [![build status](https://gitlab.com/mxklb/rtaudiostreamer/badges/master/build.svg)](https://gitlab.com/mxklb/rtaudiostreamer/pipelines)
-[![coverage report](https://gitlab.com/mxklb/rtaudiostreamer/badges/master/coverage.svg)](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=debug_tests)
+[![coverage report](https://gitlab.com/mxklb/rtaudiostreamer/badges/master/coverage.svg)](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=debug_tests_coverage)
 [![GitLab license](https://img.shields.io/badge/MIT-license-blue.svg)](https://gitlab.com/mxklb/rtaudiostreamer/blob/master/LICENSE)
 
 Download latest development version here
-- [rtaudiostreamer-linux.x86_64.AppImage](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_appimage)
-- [rtaudiostreamer.ubuntu18.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_bionic)
-- [rtaudiostreamer.ubuntu16.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_xenial)
-- [rtaudiostreamer.ubuntu14.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=deploy_trusty)
-- [RtAudioStreamer.macOS-10.13.dmg](https://rawgit.com/mxklb/rtaudiostreamer/osx-deploy/RtAudioStreamer.dmg)
+- [rtaudiostreamer-linux.x86_64.AppImage](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=appimage_latest)
+- [rtaudiostreamer.ubuntu16.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=debian_xenial_latest)
+- [rtaudiostreamer.ubuntu14.04_amd64.deb](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=debian_trusty_latest)
+- [RtAudioStreamer.macOS-10.13.dmg](https://cdn.jsdelivr.net/gh/mxklb/rtaudiostreamer@osx-deploy/RtAudioStreamer.dmg)
 
 ## Build Dependencies
 To succesfully build on Ubuntu:
