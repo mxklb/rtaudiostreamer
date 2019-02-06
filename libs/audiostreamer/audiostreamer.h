@@ -4,6 +4,7 @@
 #include <RtAudio.h>
 #include <QElapsedTimer>
 #include <QObject>
+#include <mutex>
 
 #include "audiobuffer.h"
 #include "streamsettings.h"
@@ -55,6 +56,7 @@ private:
 
     AudioBuffer audioBuffer;
     AudioProcessing audioProcessing;
+    std::mutex mutex;
 
     void setupDeviceList();
     bool allocateRingBuffers(QVector<unsigned int> listOfchannelIds,

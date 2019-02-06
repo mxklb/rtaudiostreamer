@@ -257,6 +257,7 @@ AudioBuffer* AudioStreamer::getAudioBuffer()
  */
 void AudioStreamer::callbackFinished()
 {
+    std::unique_lock<std::mutex> lock{mutex};
     emit audioCallbackFinished();
 }
 
