@@ -7,6 +7,7 @@ CONFIG += c++11
 LIBS += -lrtaudio
 macx {
     INCLUDEPATH += /usr/local/include/
+    INCLUDEPATH += /usr/local/include/rtaudio/
     LIBS += -L/usr/local/lib -lrtaudio
 }
 
