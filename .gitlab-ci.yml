@@ -104,21 +104,20 @@ debian_xenial_latest:
   extends: .build_debian_xenial
 
 # Release deployments
-debian_trusty_stable:
-  extends: .build_debian_trusty
+.release_condition: &release_condition
   stage: release
   only:
     - tags
   except:
     - /^(?!master).+@/
 
+debian_trusty_stable:
+  extends: .build_debian_trusty
+  <<: *release_condition
+
 debian_xenial_stable:
   extends: .build_debian_xenial
-  stage: release
-  only:
-    - tags
-  except:
-    - /^(?!master).+@/
+  <<: *release_condition
 
 ## 5 Build & Deploy .AppImage's
 .build_appimage:
@@ -143,8 +142,4 @@ appimage_latest:
 # Release deployment
 appimage_stable:
   extends: .build_appimage
-  stage: release
-  only:
-    - tags
-  except:
-    - /^(?!master).+@/
+  <<: *release_condition
