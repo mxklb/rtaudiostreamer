@@ -6,7 +6,7 @@ It's an example project how to use RtAudio for multi OS audio / soundcard monito
 
 [![Build Status](https://travis-ci.org/mxklb/rtaudiostreamer.svg?branch=master)](https://travis-ci.org/mxklb/rtaudiostreamer)
 [![codecov](https://codecov.io/gl/mxklb/rtaudiostreamer/branch/master/graph/badge.svg)](https://codecov.io/gl/mxklb/rtaudiostreamer)
-[![build status](https://gitlab.com/mxklb/rtaudiostreamer/badges/master/build.svg)](https://gitlab.com/mxklb/rtaudiostreamer/pipelines)
+[![build status](https://gitlab.com/mxklb/rtaudiostreamer/badges/master/pipeline.svg)](https://gitlab.com/mxklb/rtaudiostreamer/commits/master)
 [![coverage report](https://gitlab.com/mxklb/rtaudiostreamer/badges/master/coverage.svg)](https://gitlab.com/mxklb/rtaudiostreamer/builds/artifacts/master/download?job=debug_tests_coverage)
 [![GitLab license](https://img.shields.io/badge/MIT-license-blue.svg)](https://gitlab.com/mxklb/rtaudiostreamer/blob/master/LICENSE)
 
